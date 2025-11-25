@@ -9,7 +9,7 @@ procedure menu();
 implementation
 
 var
-  Title: string;
+  Title: ansistring;
 
 procedure menu();
 begin
