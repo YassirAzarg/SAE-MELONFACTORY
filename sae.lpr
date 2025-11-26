@@ -5,10 +5,13 @@ program sae;
 uses
   Classes,
   SysUtils,
-  EcranAccueil;
+  EcranAccueil,
+  EcranPrincipale;
 
 begin
 
-  menu();
+  menuGame();
+
+
   ReadLn;
 end.

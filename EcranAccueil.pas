@@ -29,15 +29,13 @@ begin
   deplacerCurseurXY(87, 37);
   WriteLn('2\ Quitter');
 
-  dessinerCadreXY(136, 35, 143, 37, simple, white, black);
-
+  dessinerCadreXY(136, 35, 141, 37, simple, white, black);
   deplacerCurseurXY(138, 36);
 
   ReadLn(choix);
 
   menu := choix;
 
-  ReadLn();
 end;
 
 begin

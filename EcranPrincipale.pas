@@ -2,25 +2,32 @@ unit EcranPrincipale;
 
 interface
 
+uses
+  Classes,
+  SysUtils,
+  logique,
+  EcranAccueil;
+
+// Procedure principale qui lance les pages principales
 procedure menuGame();
 
 implementation
 
-procedure menuGame()
+procedure menuGame();
 var
-  choix: String;
+  choix: string;
 
 begin
   choix := menu();
 
-if (choix == '1') then
+  if (choix = '1') then
   begin
     renderGame();
   end
-  else 
-    begin
-      quitter();
-    end
+  else
+  begin
+    quitter();
+  end;
 
 end;
 

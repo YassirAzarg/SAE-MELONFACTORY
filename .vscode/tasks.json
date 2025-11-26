@@ -13,6 +13,10 @@
       "buildOption": {
         "unitOutputDir": "./out",
         "customOptions": ["-dDEBUG", "-gw2"]
+      },
+      "group": {
+        "kind": "build",
+        "isDefault": true
       }
     },
     {
@@ -27,6 +31,9 @@
       "buildOption": {
         "unitOutputDir": "./out",
         "customOptions": ["-dRELEASE", "-O2"]
+      },
+      "group": {
+        "kind": "build"
       }
     }
   ]
