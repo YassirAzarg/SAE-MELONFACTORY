@@ -5,7 +5,7 @@ interface
 uses
   Classes,
   SysUtils,
-  logique,
+  Logique,
   EcranAccueil;
 
 // Procedure principale qui lance les pages principales

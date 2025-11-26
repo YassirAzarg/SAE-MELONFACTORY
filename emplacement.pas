@@ -4,6 +4,9 @@ interface
 
 uses SysUtils, GestionEcran, utils, logique;
 
+const
+  FER_DEPART = 200;
+
 type
   emplacement = record
     id: integer;          // de 1 à 10
