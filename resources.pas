@@ -1,4 +1,4 @@
-unit resources;
+unit Resources;
 
 interface
 
