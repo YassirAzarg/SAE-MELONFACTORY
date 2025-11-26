@@ -5,7 +5,7 @@ program sae;
 uses
   Classes,
   SysUtils,
-  logique;
+  EcranAccueil;
 
 begin
 
