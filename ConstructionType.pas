@@ -4,6 +4,7 @@ interface
 
 type
   TypeConstructions = (
+    aucune,
     mine,
     constructeur,
     hub,
