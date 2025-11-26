@@ -11,7 +11,7 @@ type
     gisement: boolean;    // Si True alors possibilité de construire une mine
     typologie: TypeConstructions;
     actif: boolean;
-    minerai: resourcesC;     // ou TMinerai si tu veux
+    minerai: resourcesC;
   end;
 
 procedure initEmplacement(); // Initialiser les Emplacement
