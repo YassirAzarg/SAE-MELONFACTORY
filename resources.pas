@@ -2,14 +2,14 @@ unit Resources;
 
 interface
 
-uses SysUtils, GestionEcran, Logique, Emplacement;
+uses SysUtils, GestionEcran;
 
 const
   FER_DEPART = 200;
   CUIVRE_DEPART = 90;
 
 type
-  resources = (
+  resourcesC = (
     fer,
     cuivre,
     calcaire,

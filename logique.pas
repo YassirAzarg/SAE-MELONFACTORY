@@ -2,7 +2,7 @@ unit Logique;
 
 interface
 
-uses SysUtils, GestionEcran, Windows, utils;
+uses SysUtils, GestionEcran, Windows, utils, Construction;
 
 procedure renderGame();
 procedure quitter();
@@ -117,6 +117,10 @@ begin
     // Procedure pour ecrire avec une petite animation
     animEcriture(lignes[i].pos, lignes[i].texte);
   end;
+
+  ReadLn();
+
+  InitialiserConstructions();
 
 end;
 

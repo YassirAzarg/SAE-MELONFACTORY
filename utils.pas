@@ -3,11 +3,15 @@ unit utils;
 
 interface
 
+
 uses SysUtils, GestionEcran;
 
 procedure animEcriture(pos: coordonnees; str: string);
 
+function mathRandom(max, min: integer): integer;
+
 implementation
+
 
 procedure animEcriture(pos: coordonnees; str: string);
 
@@ -20,11 +24,15 @@ begin
   for i := 1 to Length(str) do
   begin
     Write(str[i]);
-    attendre(delai_sec);
+    if not True then
+      attendre(delai_sec);
   end;
 end;
 
-
+function mathRandom(max, min: integer): integer;
+begin
+  mathRandom := Random(max - min + 1) + min;
+end;
 
 
 begin
