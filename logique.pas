@@ -2,16 +2,29 @@ unit Logique;
 
 interface
 
-uses SysUtils, GestionEcran, Windows, utils, Construction, Emplacement;
+uses SysUtils, GestionEcran, Windows, utils, Construction, Emplacement, Resources;
 
 procedure renderGame();
 procedure quitter();
 procedure initInterfaceGame();
 
-procedure writeResources();
+procedure writeResources(x, y: integer; str: string; resource: resourcesC;
+  couleur: byte);
 
 
 implementation
+
+
+procedure writeResources(x, y: integer; str: string; resource: resourcesC;
+  couleur: byte);
+begin
+  deplacerCurseurXY(x, y);
+  couleurTexte(couleur);
+  Write(str);
+  deplacerCurseurXY(x + 28, y);
+  Write(': ', getPlayerResource(resource));
+end;
+
 
 
 procedure initInterfaceGame();
@@ -27,111 +40,51 @@ begin
   deplacerCurseurXY(15, 3);
   Write('INVENTAIRE DE LA ZONE');
 
-  deplacerCurseurXY(6, 6);
-
   couleurTexte(Cyan);
-  Write('Marza''Coin');
-
-  deplacerCurseurXY(6, 8);
+  writeResources(6, 6, 'Marza''Coin', marzacoins, Cyan);
 
   couleurTexte(red);
-
-  Write('Production d''électricité');
-
-  deplacerCurseurXY(6, 9);
-
-  Write('Consommation d''électricité');
+  writeResources(6, 8, 'Production d''électricité', production_elec, red);
+  writeResources(6, 9, 'Consommation d''électricité', consommation_elec, red);
 
   couleurTexte(white);
-  deplacerCurseurXY(6, 11);
-
-  Write('Minerai de cuivre');
-
-  deplacerCurseurXY(6, 12);
-
-  Write('Minerai de fer');
-
-  deplacerCurseurXY(6, 13);
-
-  Write('Calcaire');
-
-  deplacerCurseurXY(6, 14);
-
-  Write('Charbon');
-
-  deplacerCurseurXY(6, 15);
-
-  Write('Lingots de cuivre');
-
-  deplacerCurseurXY(6, 16);
-
-  Write('Lingots de fer');
-
-  deplacerCurseurXY(6, 17);
-
-  Write('Cables de cuivre');
-
-  deplacerCurseurXY(6, 18);
-
-  Write('Plaques de fer');
-
-
-  deplacerCurseurXY(6, 19);
-
-  Write('Tuyaux en fer');
-
-  deplacerCurseurXY(6, 20);
-
-  Write('Sacs de Béton');
-
-  deplacerCurseurXY(6, 21);
-
-  Write('Acier');
-
-  deplacerCurseurXY(6, 22);
-
-  Write('Plaques renforcées');
-
-
-  deplacerCurseurXY(6, 23);
-
-
-  Write('Poutres industrielles');
-
-  deplacerCurseurXY(6, 24);
-
-  Write('Fondations');
+  writeResources(6, 11, 'Minerai de cuivre', minerai_de_cuivre, white);
+  writeResources(6, 12, 'Minerai de fer', minerai_de_fer, white);
+  writeResources(6, 13, 'Calcaire', calcaire, white);
+  writeResources(6, 14, 'Charbon', charbon, white);
+  writeResources(6, 15, 'Lingots de cuivre', cuivre, white);
+  writeResources(6, 16, 'Lingots de fer', fer, white);
+  writeResources(6, 17, 'Cables de cuivre', cables_de_cuivre, white);
+  writeResources(6, 18, 'Plaques de fer', plaques_de_fer, white);
+  writeResources(6, 19, 'Tuyaux en fer', tuyaux_en_fer, white);
+  writeResources(6, 20, 'Sacs de Béton', sacs_de_beton, white);
+  writeResources(6, 21, 'Acier', acier, white);
+  writeResources(6, 22, 'Plaques renforcées', plaques_renforcees, white);
+  writeResources(6, 23, 'Poutres industrielles', poutres_industrielles, white);
+  writeResources(6, 24, 'Fondations', fondations, white);
 
   deplacerCurseurXY(6, 28);
-
   Write('Que voulez-vous faire ?');
 
   deplacerCurseurXY(8, 29);
-
   Write('1/ Construire un bâtiment');
 
   deplacerCurseurXY(8, 30);
-
   Write('2/ Changer la production');
 
   deplacerCurseurXY(8, 31);
-
   Write('3/ Améliorer un bâtiment');
 
   deplacerCurseurXY(8, 32);
-
   Write('4/ Explorer la zone');
 
   deplacerCurseurXY(8, 33);
-
   Write('5/ Changer de zone');
 
   deplacerCurseurXY(8, 34);
-
   Write('6/ Transferer des ressources');
 
   deplacerCurseurXY(8, 35);
-
   Write('7/ Passer la journée');
 
   deplacerCurseurXY(8, 36);
@@ -141,10 +94,9 @@ begin
   Write('9/ Wiki');
 
   deplacerCurseurXY(8, 38);
-
   Write('0/ Quitter la partie');
-
 end;
+
 
 // Procedure qui lance le jeu
 procedure renderGame();
@@ -262,7 +214,7 @@ begin
 
   InitialiserConstructions();
   initEmplacement();
-
+  initResources();
   initInterfaceGame();
 
 end;

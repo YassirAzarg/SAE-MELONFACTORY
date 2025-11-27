@@ -7,6 +7,7 @@ uses SysUtils, GestionEcran;
 type
   //Nouveau type : Resources pour indiquer les resources dispo pour le joueur
   resourcesC = (
+    marzacoins,
     production_elec,
     consommation_elec,
     fer,
