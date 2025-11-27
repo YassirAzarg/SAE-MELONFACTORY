@@ -4,12 +4,11 @@ interface
 
 uses SysUtils, GestionEcran;
 
-const
-  FER_DEPART = 200;
-  CUIVRE_DEPART = 90;
-
 type
+  //Nouveau type : Resources pour indiquer les resources dispo pour le joueur
   resourcesC = (
+    production_elec,
+    consommation_elec,
     fer,
     cuivre,
     calcaire,
@@ -28,10 +27,66 @@ type
     );
 
 
+// Initialisation des resources (Resources du joueur)
+procedure initResources;
+
+// Fonction qui retorune le stock d une resource
+function getPlayerResource(resource: resourcesC): integer;
+
+
+// Procedure qui set le nombre de resource d'une resource précise
+procedure setPlayerResource(resource: resourcesC; val: integer);
+
+// Procedure qui add un nombre au nombre de resource d'une resource précise
+procedure addPlayerResource(resource: resourcesC; val: integer);
+
 implementation
 
+var
+  playerResource: array[resourcesC] of integer; // Resources du joueur
+
+const
+  CONSOMATION_ELEC_DEPART = 100; // Constantes des resources reçu au départ
+
+  PLAQUES_FER_DEPART = 100;
+  CABLES_CUIVRE_DEPART = 100;
+  SAC_BETONS = 20;
+
+procedure initResources;
+var
+  res: resourcesC;
 begin
+  for res := Low(resourcesC) to High(resourcesC) do
+    playerResource[res] := 0;
+
+  playerResource[cables_de_cuivre] := CABLES_CUIVRE_DEPART;
+  playerResource[plaques_de_fer] := PLAQUES_FER_DEPART;
+  playerResource[consommation_elec] := CONSOMATION_ELEC_DEPART;
+  playerResource[sacs_de_beton] := SAC_BETONS;
+
+end;
 
 
+//@parm resource de type ResourceC
+//@return un entier qui indique le nombre de resources dispo
+function getPlayerResource(resource: resourcesC): integer;
+begin
+  // return le nombre dispo de la resource
+  getPlayerResource := playerResource[resource];
+end;
+
+//@param resource de type ResourceC
+//@parm val de type entier qui est la Valeur qui va correpondre au nombre de resource dispo
+procedure setPlayerResource(resource: resourcesC; val: integer);
+begin
+  playerResource[resource] := val;
+end;
+
+//@param resource de type ResourceC
+//@parm val de type entier qui est la Valeur qui va étre ajouter au nombre de resource dispo
+procedure addPlayerResource(resource: resourcesC; val: integer);
+begin
+  playerResource[resource] := getPlayerResource(resource) + val;
+end;
 
 end.

@@ -8,6 +8,7 @@ procedure renderGame();
 procedure quitter();
 procedure initInterfaceGame();
 
+procedure writeResources();
 
 
 implementation
@@ -28,9 +29,12 @@ begin
 
   deplacerCurseurXY(6, 6);
 
+  couleurTexte(Cyan);
   Write('Marza''Coin');
 
   deplacerCurseurXY(6, 8);
+
+  couleurTexte(red);
 
   Write('Production d''électricité');
 
@@ -38,6 +42,7 @@ begin
 
   Write('Consommation d''électricité');
 
+  couleurTexte(white);
   deplacerCurseurXY(6, 11);
 
   Write('Minerai de cuivre');
