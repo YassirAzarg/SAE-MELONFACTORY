@@ -2,12 +2,144 @@ unit Logique;
 
 interface
 
-uses SysUtils, GestionEcran, Windows, utils, Construction;
+uses SysUtils, GestionEcran, Windows, utils, Construction, Emplacement;
 
 procedure renderGame();
 procedure quitter();
+procedure initInterfaceGame();
+
+
 
 implementation
+
+
+procedure initInterfaceGame();
+begin
+  effacerEcran();
+  couleurTexte(white);
+
+  dessinerCadreXY(1, 1, 52, 40, simple, white, black);
+  dessinerCadreXY(52, 1, 201, 40, simple, white, black);
+
+  SetConsoleOutputCP(CP_UTF8);
+
+  deplacerCurseurXY(15, 3);
+  Write('INVENTAIRE DE LA ZONE');
+
+  deplacerCurseurXY(6, 6);
+
+  Write('Marza''Coin');
+
+  deplacerCurseurXY(6, 8);
+
+  Write('Production d''électricité');
+
+  deplacerCurseurXY(6, 9);
+
+  Write('Consommation d''électricité');
+
+  deplacerCurseurXY(6, 11);
+
+  Write('Minerai de cuivre');
+
+  deplacerCurseurXY(6, 12);
+
+  Write('Minerai de fer');
+
+  deplacerCurseurXY(6, 13);
+
+  Write('Calcaire');
+
+  deplacerCurseurXY(6, 14);
+
+  Write('Charbon');
+
+  deplacerCurseurXY(6, 15);
+
+  Write('Lingots de cuivre');
+
+  deplacerCurseurXY(6, 16);
+
+  Write('Lingots de fer');
+
+  deplacerCurseurXY(6, 17);
+
+  Write('Cables de cuivre');
+
+  deplacerCurseurXY(6, 18);
+
+  Write('Plaques de fer');
+
+
+  deplacerCurseurXY(6, 19);
+
+  Write('Tuyaux en fer');
+
+  deplacerCurseurXY(6, 20);
+
+  Write('Sacs de Béton');
+
+  deplacerCurseurXY(6, 21);
+
+  Write('Acier');
+
+  deplacerCurseurXY(6, 22);
+
+  Write('Plaques renforcées');
+
+
+  deplacerCurseurXY(6, 23);
+
+
+  Write('Poutres industrielles');
+
+  deplacerCurseurXY(6, 24);
+
+  Write('Fondations');
+
+  deplacerCurseurXY(6, 28);
+
+  Write('Que voulez-vous faire ?');
+
+  deplacerCurseurXY(8, 29);
+
+  Write('1/ Construire un bâtiment');
+
+  deplacerCurseurXY(8, 30);
+
+  Write('2/ Changer la production');
+
+  deplacerCurseurXY(8, 31);
+
+  Write('3/ Améliorer un bâtiment');
+
+  deplacerCurseurXY(8, 32);
+
+  Write('4/ Explorer la zone');
+
+  deplacerCurseurXY(8, 33);
+
+  Write('5/ Changer de zone');
+
+  deplacerCurseurXY(8, 34);
+
+  Write('6/ Transferer des ressources');
+
+  deplacerCurseurXY(8, 35);
+
+  Write('7/ Passer la journée');
+
+  deplacerCurseurXY(8, 36);
+  Write('8/ Missions');
+
+  deplacerCurseurXY(8, 37);
+  Write('9/ Wiki');
+
+  deplacerCurseurXY(8, 38);
+
+  Write('0/ Quitter la partie');
+
+end;
 
 // Procedure qui lance le jeu
 procedure renderGame();
@@ -26,7 +158,6 @@ begin
 
   effacerEcran();
 
-  couleurTexte(Cyan);
   // Définition du nombre total de lignes
   SetLength(lignes, 17);
   // J'utilise ici SetConsoleOutputCP pour appliquer l'encodage UTF-8 pour avoir les caractères spéciaux français.
@@ -118,9 +249,16 @@ begin
     animEcriture(lignes[i].pos, lignes[i].texte);
   end;
 
+
   ReadLn();
 
+
+  SetConsoleOutputCP(850);
+
   InitialiserConstructions();
+  initEmplacement();
+
+  initInterfaceGame();
 
 end;
 

@@ -8,8 +8,9 @@ uses
   Logique,
   EcranAccueil;
 
-// Procedure principale qui lance les pages principales
+// Procedure principale qui lance la pages des choix
 procedure menuGame();
+
 
 implementation
 
@@ -30,8 +31,6 @@ begin
   end;
 
 end;
-
-begin
 
 
 

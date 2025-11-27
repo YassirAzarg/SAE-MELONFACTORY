@@ -23,7 +23,8 @@ type
     poutres_industrielles,
     tuyaux_en_fer,
     fondations,
-    charbon
+    charbon,
+    aucun
     );
 
 

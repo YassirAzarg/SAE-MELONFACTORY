@@ -6,12 +6,13 @@ uses
   Classes,
   SysUtils,
   EcranAccueil,
-  EcranPrincipale;
+  EcranPrincipale,
+  utils;
 
 begin
 
+  setDebug(True);
   menuGame();
-
 
   ReadLn;
 end.
