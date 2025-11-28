@@ -2,19 +2,72 @@ unit Logique;
 
 interface
 
-uses SysUtils, GestionEcran, Windows, utils, Construction, Emplacement, Resources;
+uses SysUtils, GestionEcran, Windows, utils, Construction, Emplacement, Resources, EcranAccueil;
 
-procedure renderGame();
-procedure quitter();
-procedure initInterfaceGame();
-
+procedure renderGame(); // Procedure qui affiche l'interface texte
+procedure quitter(); // Procedure pour quitter du jeu
+procedure initInterfaceGame(); // Procedure qui initialise l'Interface principale
+procedure buildBatiment(); // Procedure qui gére l'option construire un batiment
 
 // procedure pour facilement écrire les resources
 procedure writeResources(x, y: integer; str: string; resource: resourcesC;
   couleur: byte);
 
+//Gérer le jeu
+procedure manageGame(val : String);
+
+// Procedure qui refresh la page des resources
+procedure refreshInterfaceGame();
+
+// Procedure pour le menu princpale
+procedure menuGame();
+
+//Fonction qui me permet de ecrire des texte lors de la selection et qui retourne un choix
+function SelectionInterfaceGame(str : String) : String;
+
+//Fonction qui ecris une alerte 
+procedure AlertInterfaceGame(str,subtitle : String, color : Byte);
+
 
 implementation
+
+procedure menuGame();
+var
+  choix: string;
+
+begin
+  effacerEcran();
+  choix := menu();
+
+  if (choix = '1') then
+  begin
+    renderGame();
+  end
+  else
+  begin
+    quitter();
+  end;
+
+end;
+
+
+procedure retourmenuGame();
+var
+  choix: string;
+begin
+  effacerEcran();
+  choix := menuRetour();
+
+  case choix of
+    '1': renderGame();
+    '2': quitter();
+    '3': refreshInterfaceGame();
+  else
+    quitter();
+  end;
+
+end;
+
 
 
 procedure writeResources(x, y: integer; str: string; resource: resourcesC;
@@ -30,6 +83,8 @@ end;
 
 
 procedure initInterfaceGame();
+var  
+  choix : String;
 begin
   effacerEcran();
   couleurTexte(white);
@@ -111,8 +166,260 @@ begin
 
   deplacerCurseurXY(43, 38);
 
+  ReadLn(choix);
+
+  manageGame(choix);
+
 end;
 
+
+procedure refreshInterfaceGame();
+var  
+  choix : String;
+begin
+  effacerEcran();
+  couleurTexte(white);
+
+  dessinerCadreXY(1, 1, 52, 40, simple, white, black);
+  dessinerCadreXY(52, 1, 201, 40, simple, white, black);
+
+  SetConsoleOutputCP(CP_UTF8);
+
+  deplacerCurseurXY(15, 3);
+  Write('INVENTAIRE DE LA ZONE');
+
+  deplacerCurseurXY(77, 3);
+  Write('ZONE : Zone de départ');
+
+  deplacerCurseurXY(153, 3);
+  Write('Jeudi 24 Avril 2025');
+
+  couleurTexte(Cyan);
+  writeResources(6, 6, 'Marza''Coin', marzacoins, Cyan);
+
+  couleurTexte(red);
+  writeResources(6, 8, 'Production d''électricité', production_elec, red);
+  writeResources(6, 9, 'Consommation d''électricité', consommation_elec, red);
+
+  couleurTexte(white);
+  writeResources(6, 11, 'Minerai de cuivre', minerai_de_cuivre, white);
+  writeResources(6, 12, 'Minerai de fer', minerai_de_fer, white);
+  writeResources(6, 13, 'Calcaire', calcaire, white);
+  writeResources(6, 14, 'Charbon', charbon, white);
+  writeResources(6, 15, 'Lingots de cuivre', cuivre, white);
+  writeResources(6, 16, 'Lingots de fer', fer, white);
+  writeResources(6, 17, 'Cables de cuivre', cables_de_cuivre, white);
+  writeResources(6, 18, 'Plaques de fer', plaques_de_fer, white);
+  writeResources(6, 19, 'Tuyaux en fer', tuyaux_en_fer, white);
+  writeResources(6, 20, 'Sacs de Béton', sacs_de_beton, white);
+  writeResources(6, 21, 'Acier', acier, white);
+  writeResources(6, 22, 'Plaques renforcées', plaques_renforcees, white);
+  writeResources(6, 23, 'Poutres industrielles', poutres_industrielles, white);
+  writeResources(6, 24, 'Fondations', fondations, white);
+
+  deplacerCurseurXY(6, 28);
+  Write('Que voulez-vous faire ?');
+
+  deplacerCurseurXY(8, 29);
+  Write('1/ Construire un bâtiment');
+
+  deplacerCurseurXY(8, 30);
+  Write('2/ Changer la production');
+
+  deplacerCurseurXY(8, 31);
+  Write('3/ Améliorer un bâtiment');
+
+  deplacerCurseurXY(8, 32);
+  Write('4/ Explorer la zone');
+
+  deplacerCurseurXY(8, 33);
+  Write('5/ Changer de zone');
+
+  deplacerCurseurXY(8, 34);
+  Write('6/ Transferer des ressources');
+
+  deplacerCurseurXY(8, 35);
+  Write('7/ Passer la journée');
+
+  deplacerCurseurXY(8, 36);
+  Write('8/ Missions');
+
+  deplacerCurseurXY(8, 37);
+  Write('9/ Wiki');
+
+  deplacerCurseurXY(8, 38);
+  Write('0/ Quitter la partie');
+
+  SetConsoleOutputCP(850);
+  dessinerCadreXY(41, 37, 51, 39, simple, white, black);
+
+  dessineEmplacement();
+
+  deplacerCurseurXY(43, 38);
+
+  ReadLn(choix);
+
+  manageGame(choix);
+
+end;
+
+
+function SelectionInterfaceGame(str : String): String;
+var  
+  choix : String;
+begin
+  effacerEcran();
+  couleurTexte(white);
+
+  dessinerCadreXY(1, 1, 52, 40, simple, white, black);
+  dessinerCadreXY(52, 1, 201, 40, simple, white, black);
+
+  SetConsoleOutputCP(CP_UTF8);
+
+  deplacerCurseurXY(15, 3);
+  Write('INVENTAIRE DE LA ZONE');
+
+  deplacerCurseurXY(77, 3);
+  Write('ZONE : Zone de départ');
+
+  deplacerCurseurXY(153, 3);
+  Write('Jeudi 24 Avril 2025');
+
+  couleurTexte(Cyan);
+  writeResources(6, 6, 'Marza''Coin', marzacoins, Cyan);
+
+  couleurTexte(red);
+  writeResources(6, 8, 'Production d''électricité', production_elec, red);
+  writeResources(6, 9, 'Consommation d''électricité', consommation_elec, red);
+
+  couleurTexte(white);
+  writeResources(6, 11, 'Minerai de cuivre', minerai_de_cuivre, white);
+  writeResources(6, 12, 'Minerai de fer', minerai_de_fer, white);
+  writeResources(6, 13, 'Calcaire', calcaire, white);
+  writeResources(6, 14, 'Charbon', charbon, white);
+  writeResources(6, 15, 'Lingots de cuivre', cuivre, white);
+  writeResources(6, 16, 'Lingots de fer', fer, white);
+  writeResources(6, 17, 'Cables de cuivre', cables_de_cuivre, white);
+  writeResources(6, 18, 'Plaques de fer', plaques_de_fer, white);
+  writeResources(6, 19, 'Tuyaux en fer', tuyaux_en_fer, white);
+  writeResources(6, 20, 'Sacs de Béton', sacs_de_beton, white);
+  writeResources(6, 21, 'Acier', acier, white);
+  writeResources(6, 22, 'Plaques renforcées', plaques_renforcees, white);
+  writeResources(6, 23, 'Poutres industrielles', poutres_industrielles, white);
+  writeResources(6, 24, 'Fondations', fondations, white);
+
+  deplacerCurseurXY(9,31);
+  WriteLn(str);
+  SetConsoleOutputCP(850);
+  dessinerCadreXY(41, 37, 51, 39, simple, white, black);
+
+  dessineEmplacement();
+
+  deplacerCurseurXY(43, 38);
+
+  ReadLn(choix);
+
+  manageGame(choix);
+
+end;
+
+procedure AlertInterfaceGame(str, subtitle : String, color : Byte);
+var  
+  choix : String;
+begin
+  effacerEcran();
+  couleurTexte(white);
+
+  dessinerCadreXY(1, 1, 52, 40, simple, white, black);
+  dessinerCadreXY(52, 1, 201, 40, simple, white, black);
+
+  SetConsoleOutputCP(CP_UTF8);
+
+  deplacerCurseurXY(15, 3);
+  Write('INVENTAIRE DE LA ZONE');
+
+  deplacerCurseurXY(77, 3);
+  Write('ZONE : Zone de départ');
+
+  deplacerCurseurXY(153, 3);
+  Write('Jeudi 24 Avril 2025');
+
+  couleurTexte(Cyan);
+  writeResources(6, 6, 'Marza''Coin', marzacoins, Cyan);
+
+  couleurTexte(red);
+  writeResources(6, 8, 'Production d''électricité', production_elec, red);
+  writeResources(6, 9, 'Consommation d''électricité', consommation_elec, red);
+
+  couleurTexte(white);
+  writeResources(6, 11, 'Minerai de cuivre', minerai_de_cuivre, white);
+  writeResources(6, 12, 'Minerai de fer', minerai_de_fer, white);
+  writeResources(6, 13, 'Calcaire', calcaire, white);
+  writeResources(6, 14, 'Charbon', charbon, white);
+  writeResources(6, 15, 'Lingots de cuivre', cuivre, white);
+  writeResources(6, 16, 'Lingots de fer', fer, white);
+  writeResources(6, 17, 'Cables de cuivre', cables_de_cuivre, white);
+  writeResources(6, 18, 'Plaques de fer', plaques_de_fer, white);
+  writeResources(6, 19, 'Tuyaux en fer', tuyaux_en_fer, white);
+  writeResources(6, 20, 'Sacs de Béton', sacs_de_beton, white);
+  writeResources(6, 21, 'Acier', acier, white);
+  writeResources(6, 22, 'Plaques renforcées', plaques_renforcees, white);
+  writeResources(6, 23, 'Poutres industrielles', poutres_industrielles, white);
+  writeResources(6, 24, 'Fondations', fondations, white);
+
+  couleurTexte(color);
+  deplacerCurseurXY(9,31);
+  Write(str);
+  deplacerCurseurXY(9,32);
+  Write(subtitle);
+  couleurTexte(white);
+  SetConsoleOutputCP(850);
+
+  dessineEmplacement();
+
+  ReadLn();
+
+end;
+
+procedure manageGame(val : String);
+begin
+  case val of
+    '0': begin
+        retourmenuGame(); // Procedure retour menu (avec retour possible a la partie actuelle)
+       end;
+    '1': begin
+         buildBatiment(); 
+       end;
+    '2': begin
+         // action pour 2
+       end;
+    '3': begin
+         // action pour 3
+       end;
+    '4': begin
+         // action pour 4
+       end;
+    '5': begin
+         // action pour 5
+       end;
+    '6': begin
+         // action pour 6
+       end;
+    '7': begin
+         // action pour 7
+       end;
+    '8': begin
+         // action pour 8
+       end;
+    '9': begin
+         // action pour 9
+       end;
+  else
+    begin
+      // valeur hors range
+    end;
+  end;
+end;
 
 // Procedure qui lance le jeu
 procedure renderGame();
@@ -240,5 +547,27 @@ procedure quitter();
 begin
 end;
 
-begin
+
+procedure buildBatiment();
+var choix : String;
+  begin
+    choix := SelectionInterfaceGame('< Selectionnez un emplacement >');
+    
+    if (choix < 10) AND (choix > 0 ) then
+      begin
+      end;
+     else
+      begin
+        AlertInterfaceGame('Impossible de construire ici','Emplacement inexistant', red);
+      end;
+      
+
+
+
+  end;
+
+end.
+
+
+
 end.

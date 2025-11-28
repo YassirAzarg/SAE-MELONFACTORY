@@ -23,7 +23,8 @@ type
 
 procedure initEmplacement(); // Initialiser les Emplacement
 procedure initHUB(); // Créer le HUB
-procedure dessineEmplacement();
+
+procedure dessineEmplacement(); // Procedure pour Dessiner les emplacement
 
 
 implementation
@@ -187,6 +188,9 @@ begin
         posEmplacement[i].y2, simple, white, black); // 7
       deplacerCurseurXY(posEmplacement[i].x + 4, posEmplacement[i].y + 2);
       Write('BATIMENT : HUB');
+      couleurTexte(1);
+      deplacerCurseurXY(posEmplacement[i].x + 2, posEmplacement[i].y);
+      Write(i+1);
     end
     else if tEmplacement[i].gisement and (tEmplacement[i].minerai <> aucun) then
     begin
@@ -199,6 +203,7 @@ begin
         Write('GISEMENT NON EXPLOITE');
         deplacerCurseurXY(posEmplacement[i].x + 38, posEmplacement[i].y + 2);
         Write('NIVEAU : ', tEmplacement[i].niveau);
+
       end;
 
       if tEmplacement[i].minerai <> aucun then
@@ -206,6 +211,9 @@ begin
         deplacerCurseurXY(posEmplacement[i].x + 4, posEmplacement[i].y + 4);
         Write('MINERAI : ', getResourceLabel(tEmplacement[i].minerai));
       end;
+        couleurTexte(1);
+        deplacerCurseurXY(posEmplacement[i].x + 2, posEmplacement[i].y);
+        Write(i+1);
     end
     else if not tEmplacement[i].decouvert then
     begin
@@ -213,6 +221,9 @@ begin
         posEmplacement[i].x2, posEmplacement[i].y2, simple, 8, black);
       deplacerCurseurXY(posEmplacement[i].x + 23, posEmplacement[i].y + 3);
       Write('EMPLACEMENT NON DECOUVERT');
+      couleurTexte(1);
+      deplacerCurseurXY(posEmplacement[i].x + 2, posEmplacement[i].y);
+      Write(i+1);
     end;
   end;
 end;

@@ -6,7 +6,7 @@ uses
   Classes,
   SysUtils,
   EcranAccueil,
-  EcranPrincipale,
+  Logique,
   utils;
 
 begin
