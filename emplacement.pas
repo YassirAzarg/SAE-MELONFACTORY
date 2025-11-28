@@ -187,6 +187,7 @@ end;
 procedure dessineEmplacement();
 var
   i: integer;
+
 begin
   for i := 0 to High(tEmplacement) do
   begin
@@ -254,26 +255,43 @@ end;
 
 procedure explorerZone();
 var
-  c1, c2: integer;
+  c1, c2,c3: integer;
   done: boolean;
+  decouvrables: array of integer;
+  i, count: integer;
+  minDispo: array[0..1] of resourcesC;
 begin
   if Length(tEmplacement) = 0 then
     Exit; 
 
-  c1 := Random(2); // 0 ou 1 decouvrir ou pas
+  minDispo[0] := fer;
+  minDispo[1] := cuivre;
 
+  c1 := Random(2); // 0 ou 1 : découvrir ou pas
+  c3 := Random(3); // 0 ou 1 : Gisement ou pas
   if c1 = 1 then
   begin
-    done := False;
-    while not done do
-    begin
-      c2 := Random(9); // Choix aléatoire entre 0 et High
-      if not tEmplacement[c2].decouvert AND not (tEmplacement[c2].typologie = hub) then
+    // Créer une liste des emplacements découvrables
+    count := 0;
+    SetLength(decouvrables, Length(tEmplacement));
+    for i := 0 to High(tEmplacement) do
+      if not tEmplacement[i].decouvert and (tEmplacement[i].typologie <> hub) then
       begin
-        tEmplacement[c2].decouvert := True;
-        done := True;
+        decouvrables[count] := i;
+        Inc(count);
       end;
-    end;
+
+    if count = 0 then
+      Exit; // Rien à découvrir
+
+    // Tirer un emplacement au hasard parmi les découvrables
+    c2 := decouvrables[Random(count)];
+    tEmplacement[c2].decouvert := True;
+    if c3 = 1 then
+      begin
+        tEmplacement[c2].gisement := True;
+        tEmplacement[c2].minerai := minDispo[c3];
+      end;
   end;
 end;
 
