@@ -2,7 +2,7 @@ unit EcranAccueil;
 
 interface
 
-uses SysUtils, GestionEcran;
+uses SysUtils, GestionEcran, windows;
 
 function menu(): string;
 
@@ -61,7 +61,9 @@ begin
   deplacerCurseurXY(87, 36);
   WriteLn('2\ Quitter');
   deplacerCurseurXY(87, 37);
+  SetConsoleOutputCP(CP_UTF8);
   WriteLn('3\ Revenir à la partie');
+  SetConsoleOutputCP(850);
 
   dessinerCadreXY(136, 35, 141, 37, simple, white, black);
   deplacerCurseurXY(138, 36);

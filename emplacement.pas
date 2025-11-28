@@ -29,7 +29,12 @@ procedure initHUB(); // Créer le HUB
 procedure dessineEmplacement(); // Procedure pour Dessiner les emplacement
 
 //Function qui return les batiments
-function getEmplacements() : TEmplacementsArray;
+function getEmplacements(): TEmplacementsArray;
+
+
+// Procedure pour explorer une Zone
+procedure explorerZone();
+
 
 implementation
 
@@ -166,11 +171,11 @@ begin
     begin
       tEmplacement[r2].gisement := True;
       tEmplacement[r2].minerai := minDispo[temp];
-      tEmplacement[r2].niveau := mathRandom(1,3); // Je choisi un niveau random de purté
+      tEmplacement[r2].niveau := mathRandom(1, 3); // Je choisi un niveau random de purté
 
       minDispo[temp] := aucun;
       tDeja[r2] := True;
-    end
+    end;
   end;
 
 
@@ -193,7 +198,7 @@ begin
       Write('BATIMENT : HUB');
       couleurTexte(1);
       deplacerCurseurXY(posEmplacement[i].x + 2, posEmplacement[i].y);
-      Write(i+1);
+      Write(i + 1);
     end
     else if tEmplacement[i].gisement and (tEmplacement[i].minerai <> aucun) then
     begin
@@ -214,9 +219,9 @@ begin
         deplacerCurseurXY(posEmplacement[i].x + 4, posEmplacement[i].y + 4);
         Write('MINERAI : ', getResourceLabel(tEmplacement[i].minerai));
       end;
-        couleurTexte(1);
-        deplacerCurseurXY(posEmplacement[i].x + 2, posEmplacement[i].y);
-        Write(i+1);
+      couleurTexte(1);
+      deplacerCurseurXY(posEmplacement[i].x + 2, posEmplacement[i].y);
+      Write(i + 1);
     end
     else if not tEmplacement[i].decouvert then
     begin
@@ -226,14 +231,50 @@ begin
       Write('EMPLACEMENT NON DECOUVERT');
       couleurTexte(1);
       deplacerCurseurXY(posEmplacement[i].x + 2, posEmplacement[i].y);
-      Write(i+1);
+      Write(i + 1);
+    end
+    else if tEmplacement[i].decouvert then
+      begin
+        dessinerCadreXY(posEmplacement[i].x, posEmplacement[i].y, posEmplacement[i].x2, posEmplacement[i].y2, simple, white, black);
+        deplacerCurseurXY(posEmplacement[i].x + 28, posEmplacement[i].y + 3);
+        Write('EMPLACEMENT VIDE');
+        couleurTexte(1);
+        deplacerCurseurXY(posEmplacement[i].x + 2, posEmplacement[i].y);
+        Write(i + 1);
     end;
+
   end;
 end;
 
 function getEmplacements(): TEmplacementsArray;
+begin
+  getEmplacements := tEmplacement;
+end;
+
+
+procedure explorerZone();
+var
+  c1, c2: integer;
+  done: boolean;
+begin
+  if Length(tEmplacement) = 0 then
+    Exit; 
+
+  c1 := Random(2); // 0 ou 1 decouvrir ou pas
+
+  if c1 = 1 then
   begin
-    getEmplacements := tEmplacement;
+    done := False;
+    while not done do
+    begin
+      c2 := Random(9); // Choix aléatoire entre 0 et High
+      if not tEmplacement[c2].decouvert AND not (tEmplacement[c2].typologie = hub) then
+      begin
+        tEmplacement[c2].decouvert := True;
+        done := True;
+      end;
+    end;
   end;
+end;
 
 end.

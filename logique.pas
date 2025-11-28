@@ -30,6 +30,8 @@ procedure AlertInterfaceGame(str,subtitle : String; color : Byte);
 
 procedure SelectionBatiment(indexBat : Integer);
 
+function TypologieToString(t: TypeConstructions): string;
+
 
 implementation
 
@@ -455,6 +457,18 @@ begin
 
 end;
 
+function TypologieToString(t: TypeConstructions): string;
+begin
+  case t of
+    aucune: TypologieToString := 'aucune';
+    hub: TypologieToString := 'HUB';
+    mine: TypologieToString := 'MINE';
+    constructeur: TypologieToString := 'CONSTRUCTEUR';
+  end;
+end;
+
+
+
 //@param indexBat entier qui indique l'Emplacement
 procedure SelectionBatiment(indexBat : Integer);
  var
@@ -486,18 +500,23 @@ procedure SelectionBatiment(indexBat : Integer);
 
     choixStr := MultiSelectionInterfaceGame(tMessage);
 
+
     choix := StrToInt(choixStr);
 
     choix := choix - 1;
 
-    if not getEmplacements()[choix].decouvert then
+
+
+    if not getEmplacements()[indexBat].decouvert then
       begin
         AlertInterfaceGame('Impossible de construire ici' , '  Emplacement non decouvert' , red); 
+        refreshInterfaceGame();
       end
-      else if getEmplacements()[choix].typologie = hub then
-        begin
-          AlertInterfaceGame('Impossible de construire ici' , '  Emplacement dedié au HUB' , red); 
-        end;
+    else if getEmplacements()[indexBat].typologie = hub then
+      begin
+        AlertInterfaceGame('Impossible de construire ici' , TypologieToString(getEmplacements()[indexBat].typologie) , red); 
+        refreshInterfaceGame();
+      end;
 
   end;
 
@@ -517,7 +536,8 @@ begin
          // action pour 3
        end;
     '4': begin
-         // action pour 4
+         explorerZone();
+         refreshInterfaceGame();
        end;
     '5': begin
          // action pour 5
