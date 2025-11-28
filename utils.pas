@@ -44,7 +44,7 @@ begin
   for i := 1 to Length(str) do
   begin
     Write(str[i]);
-    if not True then
+    if not getDebug then
       attendre(delai_sec);
   end;
 end;

@@ -40,6 +40,9 @@ procedure setPlayerResource(resource: resourcesC; val: integer);
 
 // Procedure qui add un nombre au nombre de resource d'une resource précise
 procedure addPlayerResource(resource: resourcesC; val: integer);
+// Function pour avoir le nom d une resource a afficher
+function getResourceLabel(resource: resourcesC): string;
+
 
 implementation
 
@@ -52,6 +55,29 @@ const
   PLAQUES_FER_DEPART = 100;
   CABLES_CUIVRE_DEPART = 100;
   SAC_BETONS = 20;
+
+  ResourceLabels: array[resourcesC] of string = (
+    'Marzacoins',
+    'Production électrique',
+    'Consommation électrique',
+    'Fer',
+    'Cuivre',
+    'Calcaire',
+    'Acier',
+    'Sacs de béton',
+    'Plaques de fer',
+    'Plaques renforcées',
+    'Minerai de cuivre',
+    'Minerai de fer',
+    'Câbles de cuivre',
+    'Poutres industrielles',
+    'Tuyaux en fer',
+    'Fondations',
+    'Charbon',
+    'Aucun'
+    );
+
+
 
 procedure initResources;
 var
@@ -88,6 +114,12 @@ end;
 procedure addPlayerResource(resource: resourcesC; val: integer);
 begin
   playerResource[resource] := getPlayerResource(resource) + val;
+end;
+
+//@return le label textuel lié à la resource
+function getResourceLabel(resource: resourcesC): string;
+begin
+  getResourceLabel := ResourceLabels[resource];
 end;
 
 end.

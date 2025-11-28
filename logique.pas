@@ -8,6 +8,8 @@ procedure renderGame();
 procedure quitter();
 procedure initInterfaceGame();
 
+
+// procedure pour facilement écrire les resources
 procedure writeResources(x, y: integer; str: string; resource: resourcesC;
   couleur: byte);
 
@@ -39,6 +41,12 @@ begin
 
   deplacerCurseurXY(15, 3);
   Write('INVENTAIRE DE LA ZONE');
+
+  deplacerCurseurXY(77, 3);
+  Write('ZONE : Zone de départ');
+
+  deplacerCurseurXY(153, 3);
+  Write('Jeudi 24 Avril 2025');
 
   couleurTexte(Cyan);
   writeResources(6, 6, 'Marza''Coin', marzacoins, Cyan);
@@ -95,6 +103,14 @@ begin
 
   deplacerCurseurXY(8, 38);
   Write('0/ Quitter la partie');
+
+  SetConsoleOutputCP(850);
+  dessinerCadreXY(41, 37, 51, 39, simple, white, black);
+
+  initEmplacement();
+
+  deplacerCurseurXY(43, 38);
+
 end;
 
 
@@ -213,7 +229,6 @@ begin
   SetConsoleOutputCP(850);
 
   InitialiserConstructions();
-  initEmplacement();
   initResources();
   initInterfaceGame();
 
