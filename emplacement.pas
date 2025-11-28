@@ -38,7 +38,6 @@ const
 var
   tEmplacement: array of EmplacementC;
 
-var
   posEmplacement: array[0..9] of positionEmplacement;
 
 

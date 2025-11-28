@@ -26,10 +26,19 @@ procedure menuGame();
 function SelectionInterfaceGame(str : String) : String;
 
 //Fonction qui ecris une alerte 
-procedure AlertInterfaceGame(str,subtitle : String, color : Byte);
+procedure AlertInterfaceGame(str,subtitle : String; color : Byte);
+
+procedure SelectionBatiment(indexBat : Integer);
 
 
 implementation
+
+type
+  tLigne = record
+    pos: coordonnees;
+    texte: string;
+  end;
+
 
 procedure menuGame();
 var
@@ -319,11 +328,73 @@ begin
 
   ReadLn(choix);
 
-  manageGame(choix);
+  SelectionInterfaceGame := choix;
+  
 
 end;
 
-procedure AlertInterfaceGame(str, subtitle : String, color : Byte);
+
+function MultiSelectionInterfaceGame(msg : tLigne): String;
+var  
+  choix : String;
+begin
+  effacerEcran();
+  couleurTexte(white);
+
+  dessinerCadreXY(1, 1, 52, 40, simple, white, black);
+  dessinerCadreXY(52, 1, 201, 40, simple, white, black);
+
+  SetConsoleOutputCP(CP_UTF8);
+
+  deplacerCurseurXY(15, 3);
+  Write('INVENTAIRE DE LA ZONE');
+
+  deplacerCurseurXY(77, 3);
+  Write('ZONE : Zone de départ');
+
+  deplacerCurseurXY(153, 3);
+  Write('Jeudi 24 Avril 2025');
+
+  couleurTexte(Cyan);
+  writeResources(6, 6, 'Marza''Coin', marzacoins, Cyan);
+
+  couleurTexte(red);
+  writeResources(6, 8, 'Production d''électricité', production_elec, red);
+  writeResources(6, 9, 'Consommation d''électricité', consommation_elec, red);
+
+  couleurTexte(white);
+  writeResources(6, 11, 'Minerai de cuivre', minerai_de_cuivre, white);
+  writeResources(6, 12, 'Minerai de fer', minerai_de_fer, white);
+  writeResources(6, 13, 'Calcaire', calcaire, white);
+  writeResources(6, 14, 'Charbon', charbon, white);
+  writeResources(6, 15, 'Lingots de cuivre', cuivre, white);
+  writeResources(6, 16, 'Lingots de fer', fer, white);
+  writeResources(6, 17, 'Cables de cuivre', cables_de_cuivre, white);
+  writeResources(6, 18, 'Plaques de fer', plaques_de_fer, white);
+  writeResources(6, 19, 'Tuyaux en fer', tuyaux_en_fer, white);
+  writeResources(6, 20, 'Sacs de Béton', sacs_de_beton, white);
+  writeResources(6, 21, 'Acier', acier, white);
+  writeResources(6, 22, 'Plaques renforcées', plaques_renforcees, white);
+  writeResources(6, 23, 'Poutres industrielles', poutres_industrielles, white);
+  writeResources(6, 24, 'Fondations', fondations, white);
+
+  deplacerCurseurXY(9,31);
+  WriteLn(str);
+  SetConsoleOutputCP(850);
+  dessinerCadreXY(41, 37, 51, 39, simple, white, black);
+
+  dessineEmplacement();
+
+  deplacerCurseurXY(43, 38);
+
+  ReadLn(choix);
+
+  SelectionInterfaceGame := choix;
+  
+
+end;
+
+procedure AlertInterfaceGame(str, subtitle : String; color : Byte);
 var  
   choix : String;
 begin
@@ -381,6 +452,24 @@ begin
 
 end;
 
+//@param indexBat entier qui indique l'Emplacement
+procedure SelectionBatiment(indexBat : Integer);
+  var choix : Integer;
+  tMessage array of tLigne
+  begin
+    
+    tMessage[0].x := 6;
+    tMessage[0].y := 28;
+    tMessage[0].texte := 'Quel bâtiment voulez vous construire ?';
+
+    tMessage[1].x := 8;
+    tMessage[1].y := 29;
+    tMessage[1].texte := '1/ Construire une mine';
+
+    choix := MultiSelectionInterfaceGame(tMessage);
+
+  end;
+
 procedure manageGame(val : String);
 begin
   case val of
@@ -416,19 +505,13 @@ begin
        end;
   else
     begin
-      // valeur hors range
+      refreshInterfaceGame();
     end;
   end;
 end;
 
 // Procedure qui lance le jeu
 procedure renderGame();
-
-type
-  tLigne = record
-    pos: coordonnees;
-    texte: string;
-  end;
 
 var
   i: integer;
@@ -549,24 +632,32 @@ end;
 
 
 procedure buildBatiment();
-var choix : String;
+var
+  choixStr: string;
+  choix: integer;
+begin
+  choixStr := SelectionInterfaceGame('< Selectionnez un emplacement >');
+
+  if choixStr = '' then
   begin
-    choix := SelectionInterfaceGame('< Selectionnez un emplacement >');
-    
-    if (choix < 10) AND (choix > 0 ) then
-      begin
-      end;
-     else
-      begin
-        AlertInterfaceGame('Impossible de construire ici','Emplacement inexistant', red);
-      end;
-      
-
-
-
+    AlertInterfaceGame('Impossible de construire ici', '   Aucune valeur saisie', red);
+    refreshInterfaceGame();
   end;
 
-end.
+  choix := StrToInt(choixStr);
+
+  choix := choix - 1; // Je affiche de 1 a 10 du coup l'utilisateur choisira un chiffre entre 1 et 10 sauf que moi la table elle est de 0 a 9.
+
+  if (choix >= 0) and (choix <= 9) then
+  begin
+    SelectionBatiment(choix);
+  end
+  else
+  begin
+    AlertInterfaceGame('Impossible de construire ici', '   Emplacement inexistant', red);
+    refreshInterfaceGame();
+  end;
+end;
 
 
 
