@@ -162,7 +162,7 @@ begin
     begin
       tEmplacement[r2].gisement := True;
       tEmplacement[r2].minerai := minDispo[temp];
-      tEmplacement[r2].niveau := mathRandom(3,1); // Je choisi un niveau random de purté
+      tEmplacement[r2].niveau := mathRandom(1,3); // Je choisi un niveau random de purté
 
       minDispo[temp] := aucun;
       tDeja[r2] := True;
