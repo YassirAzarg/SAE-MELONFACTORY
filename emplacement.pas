@@ -21,11 +21,15 @@ type
     y2: integer;
   end;
 
+  TEmplacementsArray = array of EmplacementC;
+
 procedure initEmplacement(); // Initialiser les Emplacement
 procedure initHUB(); // Créer le HUB
 
 procedure dessineEmplacement(); // Procedure pour Dessiner les emplacement
 
+//Function qui return les batiments
+function getEmplacements() : TEmplacementsArray;
 
 implementation
 
@@ -227,5 +231,9 @@ begin
   end;
 end;
 
+function getEmplacements(): TEmplacementsArray;
+  begin
+    getEmplacements := tEmplacement;
+  end;
 
 end.

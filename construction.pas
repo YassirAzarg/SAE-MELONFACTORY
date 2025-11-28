@@ -2,17 +2,9 @@ unit Construction;
 
 interface
 
-uses SysUtils, GestionEcran, utils, Resources;
+uses SysUtils, GestionEcran, utils, Resources, ConstructionType;
 
 type
-
-  TypeConstructions = (
-    mine,
-    constructeur,
-    hub,
-    centrale_elec,
-    ascenseur_orbitale
-    );
 
   TConstruction = record
     Nom: string;

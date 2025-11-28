@@ -2,7 +2,7 @@ unit Logique;
 
 interface
 
-uses SysUtils, GestionEcran, Windows, utils, Construction, Emplacement, Resources, EcranAccueil;
+uses SysUtils, GestionEcran, Windows, utils, Construction,ConstructionType, Emplacement, Resources, EcranAccueil;
 
 procedure renderGame(); // Procedure qui affiche l'interface texte
 procedure quitter(); // Procedure pour quitter du jeu
@@ -334,9 +334,10 @@ begin
 end;
 
 
-function MultiSelectionInterfaceGame(msg : tLigne): String;
+function MultiSelectionInterfaceGame(msg: array of tLigne): string;
 var  
-  choix : String;
+  choix: string;
+  i: Integer;
 begin
   effacerEcran();
   couleurTexte(white);
@@ -378,20 +379,22 @@ begin
   writeResources(6, 23, 'Poutres industrielles', poutres_industrielles, white);
   writeResources(6, 24, 'Fondations', fondations, white);
 
-  deplacerCurseurXY(9,31);
-  WriteLn(str);
+  for i := Low(msg) to High(msg) do
+  begin
+    deplacerCurseurXY(msg[i].pos.x, msg[i].pos.y);
+    Write(msg[i].texte);
+  end;
+
   SetConsoleOutputCP(850);
   dessinerCadreXY(41, 37, 51, 39, simple, white, black);
 
   dessineEmplacement();
 
   deplacerCurseurXY(43, 38);
-
   ReadLn(choix);
 
-  SelectionInterfaceGame := choix;
+  MultiSelectionInterfaceGame := choix;
   
-
 end;
 
 procedure AlertInterfaceGame(str, subtitle : String; color : Byte);
@@ -454,19 +457,47 @@ end;
 
 //@param indexBat entier qui indique l'Emplacement
 procedure SelectionBatiment(indexBat : Integer);
-  var choix : Integer;
-  tMessage array of tLigne
+ var
+  choixStr: string;
+  choix: integer;
+  tMessage : array of tLigne;
   begin
     
-    tMessage[0].x := 6;
-    tMessage[0].y := 28;
+    SetLength(tMessage, 5);
+    tMessage[0].pos.x := 6;
+    tMessage[0].pos.y := 28;
     tMessage[0].texte := 'Quel bâtiment voulez vous construire ?';
 
-    tMessage[1].x := 8;
-    tMessage[1].y := 29;
+    tMessage[1].pos.x := 8;
+    tMessage[1].pos.y := 29;
     tMessage[1].texte := '1/ Construire une mine';
 
-    choix := MultiSelectionInterfaceGame(tMessage);
+    tMessage[2].pos.x := 8;
+    tMessage[2].pos.y := 30;
+    tMessage[2].texte := '2/ Construire un constructeur';
+
+    tMessage[3].pos.x := 8;
+    tMessage[3].pos.y := 31;
+    tMessage[3].texte := '3/ Construire une centrale';
+
+    tMessage[4].pos.x := 8;
+    tMessage[4].pos.y := 32;
+    tMessage[4].texte := '4/ Construire l''ascenseur orbital ';
+
+    choixStr := MultiSelectionInterfaceGame(tMessage);
+
+    choix := StrToInt(choixStr);
+
+    choix := choix - 1;
+
+    if not getEmplacements()[choix].decouvert then
+      begin
+        AlertInterfaceGame('Impossible de construire ici' , '  Emplacement non decouvert' , red); 
+      end
+      else if getEmplacements()[choix].typologie = hub then
+        begin
+          AlertInterfaceGame('Impossible de construire ici' , '  Emplacement dedié au HUB' , red); 
+        end;
 
   end;
 
