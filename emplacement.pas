@@ -23,8 +23,12 @@ type
 
 procedure initEmplacement(); // Initialiser les Emplacement
 procedure initHUB(); // Créer le HUB
+procedure dessineEmplacement();
+
 
 implementation
+
+
 
 const
   MIN_EMPLACEMENT_GISEMENT = 2; // Min de gisement au départ
@@ -74,7 +78,7 @@ begin
   posEmplacement[2].x := 54;
   posEmplacement[2].y := 19;
   posEmplacement[2].x2 := 126;
-  posEmplacement[2].y2 := 29;
+  posEmplacement[2].y2 := 25;
 
   posEmplacement[3].x := 54;
   posEmplacement[3].y := 26;
@@ -99,17 +103,17 @@ begin
   posEmplacement[7].x := 128;
   posEmplacement[7].y := 19;
   posEmplacement[7].x2 := 200;
-  posEmplacement[7].y2 := 29;
+  posEmplacement[7].y2 := 25;
 
   posEmplacement[8].x := 128;
   posEmplacement[8].y := 26;
   posEmplacement[8].x2 := 200;
-  posEmplacement[8].y2 := 36;
+  posEmplacement[8].y2 := 32;
 
   posEmplacement[9].x := 128;
   posEmplacement[9].y := 33;
   posEmplacement[9].x2 := 200;
-  posEmplacement[9].y2 := 43;
+  posEmplacement[9].y2 := 39;
 
   minDispo[0] := fer;
   minDispo[1] := cuivre;
@@ -134,28 +138,47 @@ begin
   // Nombre de Gisement disponible au départ
   r := mathRandom(MIN_EMPLACEMENT_GISEMENT, MAX_EMPLACEMENT_GISEMENT);
 
+
   initHUB();
 
-  for i := 0 to r do
+  for i := 1 to r do
   begin
+    repeat
+      r2 := mathRandom(1, 9);
+    until not tDeja[r2];
 
-    r2 := mathRandom(1, 9);
+    temp := mathRandom(0, 1);
+
     // Générer des gisements casuel
-    if not tDeja[r2] then
+    if minDispo[temp] = aucun then
     begin
-      temp := mathRandom(0, 1);
-      if minDispo[temp] <> aucun then
-      begin
-        tEmplacement[r2].gisement := True;
-        tEmplacement[r2].minerai := minDispo[temp];
-        // je choisi un minerai entre ce disponible au départ
-        minDispo[temp] := aucun;
-        tDeja[r2] := True;
-      end;
+      if minDispo[0] <> aucun then
+        temp := 0
+      else if minDispo[1] <> aucun then
+        temp := 1;
     end;
 
+    if minDispo[temp] <> aucun then
+    begin
+      tEmplacement[r2].gisement := True;
+      tEmplacement[r2].minerai := minDispo[temp];
+      tEmplacement[r2].niveau := mathRandom(3,1); // Je choisi un niveau random de purté
+
+      minDispo[temp] := aucun;
+      tDeja[r2] := True;
+    end
   end;
 
+
+
+  dessineEmplacement();
+
+end;
+
+procedure dessineEmplacement();
+var
+  i: integer;
+begin
   for i := 0 to High(tEmplacement) do
   begin
     if tEmplacement[i].typologie = hub then
@@ -167,14 +190,15 @@ begin
     end
     else if tEmplacement[i].gisement and (tEmplacement[i].minerai <> aucun) then
     begin
-
       dessinerCadreXY(posEmplacement[i].x, posEmplacement[i].y,
-        posEmplacement[i].x2, posEmplacement[i].y2, simple, 6, black); // 7   
+        posEmplacement[i].x2, posEmplacement[i].y2, simple, 6, black); // 7
 
       if tEmplacement[i].typologie = aucune then
       begin
         deplacerCurseurXY(posEmplacement[i].x + 4, posEmplacement[i].y + 2);
         Write('GISEMENT NON EXPLOITE');
+        deplacerCurseurXY(posEmplacement[i].x + 38, posEmplacement[i].y + 2);
+        Write('NIVEAU : ', tEmplacement[i].niveau);
       end;
 
       if tEmplacement[i].minerai <> aucun then
@@ -182,20 +206,16 @@ begin
         deplacerCurseurXY(posEmplacement[i].x + 4, posEmplacement[i].y + 4);
         Write('MINERAI : ', getResourceLabel(tEmplacement[i].minerai));
       end;
-
-      if not tEmplacement[i].decouvert then
-      begin
-        dessinerCadreXY(posEmplacement[i].x, posEmplacement[i].y,
-          posEmplacement[i].x2,
-          posEmplacement[i].y2, simple, 8, black);
-        deplacerCurseurXY(posEmplacement[i].x + 23, posEmplacement[i].y + 3);
-        Write('EMPLACEMENT NON DECOUVERT');
-      end;
-
+    end
+    else if not tEmplacement[i].decouvert then
+    begin
+      dessinerCadreXY(posEmplacement[i].x, posEmplacement[i].y,
+        posEmplacement[i].x2, posEmplacement[i].y2, simple, 8, black);
+      deplacerCurseurXY(posEmplacement[i].x + 23, posEmplacement[i].y + 3);
+      Write('EMPLACEMENT NON DECOUVERT');
     end;
-
   end;
-
 end;
+
 
 end.

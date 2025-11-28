@@ -8,7 +8,7 @@ uses SysUtils, GestionEcran;
 
 procedure animEcriture(pos: coordonnees; str: string);
 
-function mathRandom(max, min: integer): integer;
+function mathRandom(min, max: integer): integer;
 
 function getDebug(): boolean;
 
@@ -49,8 +49,14 @@ begin
   end;
 end;
 
-function mathRandom(max, min: integer): integer;
+function mathRandom(min, max: integer): integer;
 begin
+  if max < min then
+  begin
+    mathRandom := min;
+    Exit;
+  end;
+  
   mathRandom := Random(max - min + 1) + min;
 end;
 
