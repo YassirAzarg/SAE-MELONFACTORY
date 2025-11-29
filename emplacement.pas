@@ -243,8 +243,12 @@ begin
     begin
       dessinerCadreXY(posEmplacement[i].x, posEmplacement[i].y,
         posEmplacement[i].x2, posEmplacement[i].y2, simple, white, black);
-      deplacerCurseurXY(posEmplacement[i].x + 4, posEmplacement[i].y + 4);
+      deplacerCurseurXY(posEmplacement[i].x + 4, posEmplacement[i].y + 2);
       Write('BATIMENT   : ', getLabelConstruction(tEmplacement[i].typologie));
+      deplacerCurseurXY(posEmplacement[i].x + 38, posEmplacement[i].y + 2);
+      Write('NIVEAU : ', tEmplacement[i].niveau);
+      deplacerCurseurXY(posEmplacement[i].x + 4, posEmplacement[i].y + 4);
+      Write('PRODUCTION   : ', getResourceLabel(tEmplacement[i].minerai));
     end
     else
     begin

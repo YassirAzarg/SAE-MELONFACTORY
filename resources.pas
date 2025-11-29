@@ -32,15 +32,23 @@ type
 procedure initResources;
 
 // Fonction qui retorune le stock d une resource
+//@parm resource de type ResourceC
+//@return un entier qui indique le nombre de resources dispo
 function getPlayerResource(resource: resourcesC): integer;
 
 
 // Procedure qui set le nombre de resource d'une resource précise
+//@param resource de type ResourceC
+//@parm val de type entier qui est la Valeur qui va correpondre au nombre de resource dispo
 procedure setPlayerResource(resource: resourcesC; val: integer);
 
 // Procedure qui add un nombre au nombre de resource d'une resource précise
+//@param resource de type ResourceC
+//@parm val de type entier qui est la Valeur qui va étre ajouter au nombre de resource dispo
 procedure addPlayerResource(resource: resourcesC; val: integer);
+
 // Function pour avoir le nom d une resource a afficher
+//@return le label textuel lié à la resource
 function getResourceLabel(resource: resourcesC): string;
 
 
@@ -109,17 +117,24 @@ begin
   playerResource[resource] := val;
 end;
 
-//@param resource de type ResourceC
-//@parm val de type entier qui est la Valeur qui va étre ajouter au nombre de resource dispo
 procedure addPlayerResource(resource: resourcesC; val: integer);
 begin
   playerResource[resource] := getPlayerResource(resource) + val;
 end;
 
-//@return le label textuel lié à la resource
 function getResourceLabel(resource: resourcesC): string;
 begin
   getResourceLabel := ResourceLabels[resource];
 end;
+
+function traiterResource(resource: resourcesC);
+ var
+  tConvert : array[resourcesC] of resourcesC; 
+ begin
+  tConvert[fer] := minerai_de_fer;
+  tConvert[cuivre] := minerai_de_cuivre;
+
+ end
+
 
 end.
