@@ -475,6 +475,7 @@ procedure SelectionBatiment(indexBat : Integer);
   choixStr: string;
   choix: integer;
   tMessage : array of tLigne;
+  tPossibilite : array of TypeConstructions;
   begin
     
     SetLength(tMessage, 5);
@@ -498,6 +499,12 @@ procedure SelectionBatiment(indexBat : Integer);
     tMessage[4].pos.y := 32;
     tMessage[4].texte := '4/ Construire l''ascenseur orbital ';
 
+    SetLength(tPossibilite, 4);
+    tPossibilite[0] := mine;
+    tPossibilite[1] := constructeur;
+    tPossibilite[2] := centrale_elec;
+    tPossibilite[3] := ascenseur_orbitale;
+
     choixStr := MultiSelectionInterfaceGame(tMessage);
 
 
@@ -512,14 +519,34 @@ procedure SelectionBatiment(indexBat : Integer);
         AlertInterfaceGame('Impossible de construire ici' , ' Emplacement non decouvert' , red); 
         refreshInterfaceGame();
       end
+    else if getEmplacements()[indexBat].niveau = 3 then
+      begin
+        AlertInterfaceGame('Impossible de construire', ' Niveau maximum atteint',red);
+        refreshInterfaceGame();
+      end 
     else if getEmplacements()[indexBat].typologie = hub then
       begin
         AlertInterfaceGame('Impossible de construire ici' , TypologieToString(getEmplacements()[indexBat].typologie) , red); 
         refreshInterfaceGame();
+      end
+    else if (getEmplacements()[indexBat].typologie <> aucune) OR (getEmplacements()[indexBat].gisement AND getEmplacements()[indexBat].decouvert) then
+      begin
+        if haveEnoughResources(tPossibilite[choix],getEmplacements()[indexBat].niveau) then
+          begin
+
+            setConstructionParametre(indexBat, getEmplacements()[indexBat].decouvert , getEmplacements()[indexBat].gisement , tPossibilite[choix] , 
+             getEmplacements()[indexBat].actif , getEmplacements()[indexBat].minerai , getEmplacements()[indexBat].niveau );
+
+            AlertInterfaceGame('Construction Effectué', 'Bravo !', green);
+
+            refreshInterfaceGame;
+
+          end
+        else
+          begin
+            AlertInterfaceGame('Impossible de construire' , ' Pas assez de ressources' , red);
+          end
       end;
-      else if getEmplacements()[indexBat].typologie <> aucune then
-        begin
-        end;
 
   end;
 

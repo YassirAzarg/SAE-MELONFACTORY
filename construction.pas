@@ -30,8 +30,9 @@ procedure InitialiserConstructions;
 
 //Function qui sert a savoir si il a assez de ressources pour une construction 
 //@param typologie TypeConstructions indique le type de construction
+//@param Niveau actuelle
 //return Oui ou Non si il a assez de ressources
-function haveEnoughResources(typologie : TypeConstructions): boolean;
+function haveEnoughResources(typologie : TypeConstructions; niveau : Integer): boolean;
 
 implementation
 
@@ -104,20 +105,52 @@ begin
   Constructions[ascenseur_orbitale].EnergieConsommee := 1000;
 end;
 
-function haveEnoughResources(typologie : TypeConstructions): boolean;
- var i,verification,good : Integer;
-  begin
-    verification := High(Constructions[typologie].CoutConstruction); // je doit vérifier que il a toutes les ressources donc je énumere les conditions pour retourner OUI
-    good := 0;
-    for i := Low(Constructions[typologie].CoutConstruction) to High(Constructions[typologie].CoutConstruction) do
-      begin
-        if Constructions[typologie].CoutConstruction[i].Quantite > getPlayerResource(Constructions[typologie].CoutConstruction[i].Ressource) then // je verifie que il a les ressources necessaires
-          begin
-            good := good + 1; // si il a assez des ressources pour cette condition alors je dit que une condition est vérifié
-          end;
-      end;
+function haveEnoughResources(typologie : TypeConstructions; niveau : Integer): boolean;
+var 
+  i, verification, good : Integer;
+begin
+  // si niveau = 0 alors on vérifie le coût de construction
+  if niveau = 0 then
+    verification := High(Constructions[typologie].CoutConstruction)
+  else
+    // sinon on vérifie le coût d'amélioration correspondant
+    verification := High(Constructions[typologie].CoutAmelioration[niveau - 1]);
 
-     haveEnoughResources := verification = good; // je retourne un boolean en fonction si toutes les conditions ont était vérifié
+  good := 0;
+
+  deplacerCurseurXY(8,35);
+  Write(verification);
+
+  if niveau = 0 then
+  begin
+    for i := Low(Constructions[typologie].CoutConstruction) to High(Constructions[typologie].CoutConstruction) do
+    begin
+      // je verifie que il a les ressources necessaires
+      if getPlayerResource(Constructions[typologie].CoutConstruction[i].Ressource) >= 
+         Constructions[typologie].CoutConstruction[i].Quantite then
+      begin
+        good := good + 1; // si il a assez des ressources pour cette condition alors je dit que une condition est vérifié
+      end;
+    end;
+  end
+  else
+  begin
+    for i := Low(Constructions[typologie].CoutAmelioration[niveau - 1]) to High(Constructions[typologie].CoutAmelioration[niveau - 1]) do
+    begin
+      // je verifie que il a les ressources necessaires
+      if getPlayerResource(Constructions[typologie].CoutAmelioration[niveau - 1][i].Ressource) >= 
+         Constructions[typologie].CoutAmelioration[niveau - 1][i].Quantite then
+      begin
+        good := good + 1; 
+        //deplacerCurseurXY(8,36);
+        //Write(good);
+      end;
+    end;
   end;
+
+  // je retourne un boolean en fonction si toutes les conditions ont été vérifié
+  haveEnoughResources := (verification + 1 = good);
+end;
+
 
 end.

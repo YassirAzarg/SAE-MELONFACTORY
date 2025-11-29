@@ -12,6 +12,13 @@ type
     ascenseur_orbitale
     );
 
+function getLabelConstruction(construction : TypeConstructions) : String;
+
 implementation
+
+function getLabelConstruction(construction : TypeConstructions) : String;
+  var tConstruct : array of TypeConstructions;
+  begin
+  end;
 
 end.

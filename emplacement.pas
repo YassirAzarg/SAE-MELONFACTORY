@@ -35,9 +35,21 @@ function getEmplacements(): TEmplacementsArray;
 // Procedure pour explorer une Zone
 procedure explorerZone();
 
+// Procedure setConstructionParametre me permet de changer exactement un parametre d une construction precise
+//@param indexCost index de l'Emplacement
+//@param decouvert Boolean 
+//@param gisement Boolean 
+//@param gisement typologie 
+//@param actif Boolean 
+//@param minerai Minerai 
+//@param resourcesC resourcesC 
+//@param niveau niveau 
+procedure setConstructionParametre(indexConst: integer; decouvert: boolean;
+  gisement: boolean; typologie: TypeConstructions; actif: boolean;
+  minerai: resourcesC; niveau: integer);
+
 
 implementation
-
 
 
 const
@@ -71,7 +83,7 @@ var
   // Je donne au programme max 2 resources possible pour les gisement
 begin
   SetLength(tEmplacement, 10);
-  // Nombre d'emplacement que je veux 10 = le nombre de index dans le tableau
+  // Nombre d'emplacement que je veux 10 = le nombre de indexConst dans le tableau
 
   posEmplacement[0].x := 54;
   posEmplacement[0].y := 5;
@@ -170,9 +182,11 @@ begin
     if minDispo[temp] <> aucun then
     begin
       tEmplacement[r2].gisement := True;
-      tEmplacement[r2].decouvert := True; // je met true pour que je indique que l'emplacement est decouvert 
+      tEmplacement[r2].decouvert := True;
+      // je met true pour que je indique que l'emplacement est decouvert 
       tEmplacement[r2].minerai := minDispo[temp];
-      tEmplacement[r2].niveau := mathRandom(1, 3); // Je choisi un niveau random de purté
+      tEmplacement[r2].niveau := mathRandom(1, 3);
+      // Je choisi un niveau random de purté
 
       minDispo[temp] := aucun;
       tDeja[r2] := True;
@@ -236,14 +250,22 @@ begin
       Write(i + 1);
     end
     else if tEmplacement[i].decouvert then
+    begin
+      dessinerCadreXY(posEmplacement[i].x, posEmplacement[i].y,
+        posEmplacement[i].x2, posEmplacement[i].y2, simple, white, black);
+      deplacerCurseurXY(posEmplacement[i].x + 28, posEmplacement[i].y + 3);
+      Write('EMPLACEMENT VIDE');
+      couleurTexte(1);
+      deplacerCurseurXY(posEmplacement[i].x + 2, posEmplacement[i].y);
+      Write(i + 1);
+    end
+    else if tEmplacement.decouvert AND tEmplacement = mine then
       begin
-        dessinerCadreXY(posEmplacement[i].x, posEmplacement[i].y, posEmplacement[i].x2, posEmplacement[i].y2, simple, white, black);
-        deplacerCurseurXY(posEmplacement[i].x + 28, posEmplacement[i].y + 3);
-        Write('EMPLACEMENT VIDE');
-        couleurTexte(1);
-        deplacerCurseurXY(posEmplacement[i].x + 2, posEmplacement[i].y);
-        Write(i + 1);
-    end;
+        dessinerCadreXY(posEmplacement[i].x, posEmplacement[i].y,
+        posEmplacement[i].x2, posEmplacement[i].y2, simple, white, black);
+        deplacerCurseurXY(posEmplacement[i].x + 4, posEmplacement[i].y + 4);
+        Write('BATIMENT',);
+      end;
 
   end;
 end;
@@ -253,17 +275,31 @@ begin
   getEmplacements := tEmplacement;
 end;
 
+procedure setConstructionParametre(indexConst: integer; decouvert: boolean;
+  gisement: boolean; typologie: TypeConstructions; actif: boolean;
+  minerai: resourcesC; niveau: integer);
+begin
+  if (indexConst < 0) or (indexConst > High(tEmplacement)) then
+    Exit;
+  tEmplacement[indexConst].decouvert := decouvert;
+  tEmplacement[indexConst].gisement := gisement;
+  tEmplacement[indexConst].typologie := typologie;
+  tEmplacement[indexConst].actif := actif;
+  tEmplacement[indexConst].minerai := minerai;
+  tEmplacement[indexConst].niveau := niveau;
+end;
+
 
 procedure explorerZone();
 var
-  c1, c2,c3: integer;
+  c1, c2, c3: integer;
   done: boolean;
   decouvrables: array of integer;
-  i, count: integer;
+  i, Count: integer;
   minDispo: array[0..1] of resourcesC;
 begin
   if Length(tEmplacement) = 0 then
-    Exit; 
+    Exit;
 
   minDispo[0] := fer;
   minDispo[1] := cuivre;
@@ -273,26 +309,26 @@ begin
   if c1 = 1 then
   begin
     // Créer une liste des emplacements découvrables
-    count := 0;
+    Count := 0;
     SetLength(decouvrables, Length(tEmplacement));
     for i := 0 to High(tEmplacement) do
       if not tEmplacement[i].decouvert and (tEmplacement[i].typologie <> hub) then
       begin
-        decouvrables[count] := i;
-        Inc(count);
+        decouvrables[Count] := i;
+        Inc(Count);
       end;
 
-    if count = 0 then
+    if Count = 0 then
       Exit; // Rien à découvrir
 
     // Tirer un emplacement au hasard parmi les découvrables
-    c2 := decouvrables[Random(count)];
+    c2 := decouvrables[Random(Count)];
     tEmplacement[c2].decouvert := True;
     if c3 = 1 then
-      begin
-        tEmplacement[c2].gisement := True;
-        tEmplacement[c2].minerai := minDispo[c3];
-      end;
+    begin
+      tEmplacement[c2].gisement := True;
+      tEmplacement[c2].minerai := minDispo[c3];
+    end;
   end;
 end;
 
