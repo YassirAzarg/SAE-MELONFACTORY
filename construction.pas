@@ -34,6 +34,10 @@ procedure InitialiserConstructions;
 //return Oui ou Non si il a assez de ressources
 function haveEnoughResources(typologie : TypeConstructions; niveau : Integer): boolean;
 
+
+procedure removeRessources(typologie : TypeConstructions; niveau : Integer);
+
+
 implementation
 
 procedure InitialiserConstructions;
@@ -109,19 +113,19 @@ function haveEnoughResources(typologie : TypeConstructions; niveau : Integer): b
 var 
   i, verification, good : Integer;
 begin
-  // si niveau = 0 alors on vérifie le coût de construction
-  if niveau = 0 then
+  // si niveau = 1 alors on vérifie le coût de construction
+  if niveau = 1 then
     verification := High(Constructions[typologie].CoutConstruction)
   else
     // sinon on vérifie le coût d'amélioration correspondant
-    verification := High(Constructions[typologie].CoutAmelioration[niveau - 1]);
+    verification := High(Constructions[typologie].CoutAmelioration[niveau + 1]);
 
   good := 0;
 
   deplacerCurseurXY(8,35);
   Write(verification);
 
-  if niveau = 0 then
+  if niveau = 1 then
   begin
     for i := Low(Constructions[typologie].CoutConstruction) to High(Constructions[typologie].CoutConstruction) do
     begin
@@ -151,6 +155,37 @@ begin
   // je retourne un boolean en fonction si toutes les conditions ont été vérifié
   haveEnoughResources := (verification + 1 = good);
 end;
+
+// procedure pour enlever les ressources
+procedure removeRessources(typologie : TypeConstructions; niveau : Integer);
+  var 
+   r,i : Integer;
+  begin
+   if niveau = 1 then
+    begin
+      r := High(Constructions[typologie].CoutConstruction);
+    end
+   else
+    begin
+      r := High(Constructions[typologie].CoutAmelioration)
+    end;
+    
+    if niveau = 1 then
+      begin
+        for i:= Low(Constructions[typologie].CoutConstruction) to High(Constructions[typologie].CoutConstruction) do
+          begin
+            removePlayerResource(Constructions[typologie].CoutConstruction[i].Ressource,Constructions[typologie].CoutConstruction[i].Quantite);
+          end
+      end
+      else 
+        begin
+          for i := Low(Constructions[typologie].CoutAmelioration[niveau - 1]) to Low(Constructions[typologie].CoutAmelioration[niveau - 1]) do
+            begin
+              removePlayerResource(Constructions[typologie].CoutAmelioration[niveau - 1][i].Ressource,Constructions[typologie].CoutAmelioration[niveau - 1][i].Quantite);
+            end
+        end;
+
+  end;
 
 
 end.

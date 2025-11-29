@@ -535,7 +535,9 @@ procedure SelectionBatiment(indexBat : Integer);
           begin
 
             setConstructionParametre(indexBat, getEmplacements()[indexBat].decouvert , getEmplacements()[indexBat].gisement , tPossibilite[choix] , 
-             False , getEmplacements()[indexBat].minerai , getEmplacements()[indexBat].niveau );
+             False , traiterResource(getEmplacements()[indexBat].minerai) , getEmplacements()[indexBat].niveau );
+
+            removeRessources(tPossibilite[choix], getEmplacements()[indexBat].niveau);
 
             AlertInterfaceGame('Construction Effectué', 'Bravo !', green);
 
@@ -546,6 +548,26 @@ procedure SelectionBatiment(indexBat : Integer);
           begin
             AlertInterfaceGame('Impossible de construire' , ' Pas assez de ressources' , red);
           end
+      end;
+    else if (getEmplacements()[indexBat].typologie = aucune) AND getEmplacements()[indexBat].gisement AND getEmplacements()[indexBat].decouvert then
+      begin
+        if haveEnoughResources(tPossibilite[choix],getEmplacements()[indexBat].niveau) then
+          begin
+              setConstructionParametre(indexBat, getEmplacements()[indexBat].decouvert , getEmplacements()[indexBat].gisement , tPossibilite[choix] , 
+             False , traiterResource(getEmplacements()[indexBat].minerai) , getEmplacements()[indexBat].niveau );
+
+             removeRessources(tPossibilite[choix], getEmplacements()[indexBat].niveau);
+
+             AlertInterfaceGame('Construction Effectué', 'Bravo !', green);
+
+             refreshInterfaceGame;
+
+
+          end;
+                else
+        begin
+          AlertInterfaceGame('Impossible de construire' , ' Pas assez de ressources' , red);
+        end
       end;
 
   end;

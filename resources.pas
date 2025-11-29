@@ -4,6 +4,9 @@ interface
 
 uses SysUtils, GestionEcran;
 
+
+
+
 type
   //Nouveau type : Resources pour indiquer les resources dispo pour le joueur
   resourcesC = (
@@ -27,6 +30,7 @@ type
     aucun
     );
 
+function traiterResource(resource: resourcesC) : resourcesC;
 
 // Initialisation des resources (Resources du joueur)
 procedure initResources;
@@ -46,6 +50,12 @@ procedure setPlayerResource(resource: resourcesC; val: integer);
 //@param resource de type ResourceC
 //@parm val de type entier qui est la Valeur qui va étre ajouter au nombre de resource dispo
 procedure addPlayerResource(resource: resourcesC; val: integer);
+
+// Procedure qui remove un nombre au nombre de resource d'une resource précise
+//@param resource de type ResourceC
+//@parm val de type entier qui est la Valeur qui va étre ajouter au nombre de resource dispo
+procedure removePlayerResource(resource: resourcesC; val: integer);
+
 
 // Function pour avoir le nom d une resource a afficher
 //@return le label textuel lié à la resource
@@ -122,19 +132,32 @@ begin
   playerResource[resource] := getPlayerResource(resource) + val;
 end;
 
+procedure removePlayerResource(resource: resourcesC; val: integer);
+begin
+  playerResource[resource] := getPlayerResource(resource) - val;
+end;
+
 function getResourceLabel(resource: resourcesC): string;
 begin
   getResourceLabel := ResourceLabels[resource];
 end;
 
-function traiterResource(resource: resourcesC);
+function traiterResource(resource: resourcesC) : resourcesC;
  var
   tConvert : array[resourcesC] of resourcesC; 
  begin
   tConvert[fer] := minerai_de_fer;
   tConvert[cuivre] := minerai_de_cuivre;
 
- end
+  if resource in [fer, cuivre] then // on evite de passer une resource qui n'est pas dans le tableau tConvert
+    begin
+      traiterResource := tConvert[resource];
+    end
+  else
+    traiterResource := resource; 
+
+
+ end;
 
 
 end.
