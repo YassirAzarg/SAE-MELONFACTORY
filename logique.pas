@@ -509,7 +509,7 @@ procedure SelectionBatiment(indexBat : Integer);
 
     if not getEmplacements()[indexBat].decouvert then
       begin
-        AlertInterfaceGame('Impossible de construire ici' , '  Emplacement non decouvert' , red); 
+        AlertInterfaceGame('Impossible de construire ici' , ' Emplacement non decouvert' , red); 
         refreshInterfaceGame();
       end
     else if getEmplacements()[indexBat].typologie = hub then
@@ -517,6 +517,9 @@ procedure SelectionBatiment(indexBat : Integer);
         AlertInterfaceGame('Impossible de construire ici' , TypologieToString(getEmplacements()[indexBat].typologie) , red); 
         refreshInterfaceGame();
       end;
+      else if getEmplacements()[indexBat].typologie <> aucune then
+        begin
+        end;
 
   end;
 

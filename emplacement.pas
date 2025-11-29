@@ -170,6 +170,7 @@ begin
     if minDispo[temp] <> aucun then
     begin
       tEmplacement[r2].gisement := True;
+      tEmplacement[r2].decouvert := True; // je met true pour que je indique que l'emplacement est decouvert 
       tEmplacement[r2].minerai := minDispo[temp];
       tEmplacement[r2].niveau := mathRandom(1, 3); // Je choisi un niveau random de purté
 
