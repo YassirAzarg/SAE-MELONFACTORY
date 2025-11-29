@@ -499,7 +499,7 @@ procedure SelectionBatiment(indexBat : Integer);
     tMessage[4].pos.y := 32;
     tMessage[4].texte := '4/ Construire l''ascenseur orbital ';
 
-    SetLength(tPossibilite, 4);
+    SetLength(tPossibilite, 5);
     tPossibilite[0] := mine;
     tPossibilite[1] := constructeur;
     tPossibilite[2] := centrale_elec;
@@ -535,7 +535,7 @@ procedure SelectionBatiment(indexBat : Integer);
           begin
 
             setConstructionParametre(indexBat, getEmplacements()[indexBat].decouvert , getEmplacements()[indexBat].gisement , tPossibilite[choix] , 
-             getEmplacements()[indexBat].actif , getEmplacements()[indexBat].minerai , getEmplacements()[indexBat].niveau );
+             False , getEmplacements()[indexBat].minerai , getEmplacements()[indexBat].niveau );
 
             AlertInterfaceGame('Construction Effectué', 'Bravo !', green);
 

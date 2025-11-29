@@ -184,6 +184,7 @@ begin
       tEmplacement[r2].gisement := True;
       tEmplacement[r2].decouvert := True;
       // je met true pour que je indique que l'emplacement est decouvert 
+      tEmplacement[r2].actif := True;
       tEmplacement[r2].minerai := minDispo[temp];
       tEmplacement[r2].niveau := mathRandom(1, 3);
       // Je choisi un niveau random de purté
@@ -202,24 +203,27 @@ end;
 procedure dessineEmplacement();
 var
   i: integer;
-
 begin
   for i := 0 to High(tEmplacement) do
   begin
-    if tEmplacement[i].typologie = hub then
-    begin
-      dessinerCadreXY(posEmplacement[i].x, posEmplacement[i].y, posEmplacement[i].x2,
-        posEmplacement[i].y2, simple, white, black); // 7
-      deplacerCurseurXY(posEmplacement[i].x + 4, posEmplacement[i].y + 2);
-      Write('BATIMENT : HUB');
-      couleurTexte(1);
-      deplacerCurseurXY(posEmplacement[i].x + 2, posEmplacement[i].y);
-      Write(i + 1);
-    end
-    else if tEmplacement[i].gisement and (tEmplacement[i].minerai <> aucun) then
+    if not tEmplacement[i].decouvert then
     begin
       dessinerCadreXY(posEmplacement[i].x, posEmplacement[i].y,
-        posEmplacement[i].x2, posEmplacement[i].y2, simple, 6, black); // 7
+        posEmplacement[i].x2, posEmplacement[i].y2, simple, 8, black);
+      deplacerCurseurXY(posEmplacement[i].x + 23, posEmplacement[i].y + 3);
+      Write('EMPLACEMENT NON DECOUVERT');
+    end
+    else if tEmplacement[i].typologie = hub then
+    begin
+      dessinerCadreXY(posEmplacement[i].x, posEmplacement[i].y,
+        posEmplacement[i].x2, posEmplacement[i].y2, simple, white, black);
+      deplacerCurseurXY(posEmplacement[i].x + 4, posEmplacement[i].y + 2);
+      Write('BATIMENT : HUB');
+    end
+    else if tEmplacement[i].gisement and (tEmplacement[i].minerai <> aucun) and tEmplacement[i].actif then
+    begin
+      dessinerCadreXY(posEmplacement[i].x, posEmplacement[i].y,
+        posEmplacement[i].x2, posEmplacement[i].y2, simple, 6, black);
 
       if tEmplacement[i].typologie = aucune then
       begin
@@ -227,48 +231,35 @@ begin
         Write('GISEMENT NON EXPLOITE');
         deplacerCurseurXY(posEmplacement[i].x + 38, posEmplacement[i].y + 2);
         Write('NIVEAU : ', tEmplacement[i].niveau);
-
+        if tEmplacement[i].decouvert then
+        begin
+          deplacerCurseurXY(posEmplacement[i].x + 4, posEmplacement[i].y + 4);
+          Write('MINERAI : ', getResourceLabel(tEmplacement[i].minerai));
+        end;
       end;
 
-      if tEmplacement[i].minerai <> aucun then
-      begin
-        deplacerCurseurXY(posEmplacement[i].x + 4, posEmplacement[i].y + 4);
-        Write('MINERAI : ', getResourceLabel(tEmplacement[i].minerai));
-      end;
-      couleurTexte(1);
-      deplacerCurseurXY(posEmplacement[i].x + 2, posEmplacement[i].y);
-      Write(i + 1);
     end
-    else if not tEmplacement[i].decouvert then
+    else if tEmplacement[i].typologie = mine then
     begin
       dessinerCadreXY(posEmplacement[i].x, posEmplacement[i].y,
-        posEmplacement[i].x2, posEmplacement[i].y2, simple, 8, black);
-      deplacerCurseurXY(posEmplacement[i].x + 23, posEmplacement[i].y + 3);
-      Write('EMPLACEMENT NON DECOUVERT');
-      couleurTexte(1);
-      deplacerCurseurXY(posEmplacement[i].x + 2, posEmplacement[i].y);
-      Write(i + 1);
+        posEmplacement[i].x2, posEmplacement[i].y2, simple, white, black);
+      deplacerCurseurXY(posEmplacement[i].x + 4, posEmplacement[i].y + 4);
+      Write('BATIMENT   : ', getLabelConstruction(tEmplacement[i].typologie));
     end
-    else if tEmplacement[i].decouvert then
+    else
     begin
       dessinerCadreXY(posEmplacement[i].x, posEmplacement[i].y,
         posEmplacement[i].x2, posEmplacement[i].y2, simple, white, black);
       deplacerCurseurXY(posEmplacement[i].x + 28, posEmplacement[i].y + 3);
       Write('EMPLACEMENT VIDE');
-      couleurTexte(1);
-      deplacerCurseurXY(posEmplacement[i].x + 2, posEmplacement[i].y);
-      Write(i + 1);
-    end
-    else if tEmplacement.decouvert AND tEmplacement = mine then
-      begin
-        dessinerCadreXY(posEmplacement[i].x, posEmplacement[i].y,
-        posEmplacement[i].x2, posEmplacement[i].y2, simple, white, black);
-        deplacerCurseurXY(posEmplacement[i].x + 4, posEmplacement[i].y + 4);
-        Write('BATIMENT',);
-      end;
+    end;
 
+    couleurTexte(1);
+    deplacerCurseurXY(posEmplacement[i].x + 2, posEmplacement[i].y);
+    Write(i + 1);
   end;
 end;
+
 
 function getEmplacements(): TEmplacementsArray;
 begin

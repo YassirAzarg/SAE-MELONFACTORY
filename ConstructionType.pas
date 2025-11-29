@@ -4,21 +4,31 @@ interface
 
 type
   TypeConstructions = (
-    aucune,
     mine,
     constructeur,
     hub,
     centrale_elec,
-    ascenseur_orbitale
-    );
+    ascenseur_orbitale,
+    aucune
+  );
 
 function getLabelConstruction(construction : TypeConstructions) : String;
 
 implementation
 
+const 
+  ConstructionLabels: array[TypeConstructions] of string = (
+    'Mine Mk',
+    'Constructeur',
+    'HUB',
+    'Centrale électrique',
+    'Ascenseur orbital',
+    'Aucun'
+  );
+
 function getLabelConstruction(construction : TypeConstructions) : String;
-  var tConstruct : array of TypeConstructions;
-  begin
-  end;
+begin
+  getLabelConstruction := ConstructionLabels[construction];
+end;
 
 end.
