@@ -19,10 +19,19 @@ type
       Ressource: resourcesC;
       Quantite: integer;
     end;
+    ProductionParNiveau: array[1..3] of integer;
+  end;
+
+  TRecette = record
+    RessourceEntree: resourcesC;
+    QuantiteEntree: integer;
+    RessourceSortie: resourcesC;
+    QuantiteSortie: integer;
   end;
 
 var
   Constructions: array[TypeConstructions] of TConstruction;
+  Recettes: array[resourcesC] of TRecette;
 
 
 //Procedure pour Initialiser les construction et leurs informations au niveau des ressources demandé
@@ -57,6 +66,9 @@ begin
   Constructions[mine].CoutConstruction[0].Ressource := plaques_de_fer;
   Constructions[mine].CoutConstruction[0].Quantite := 10;
   Constructions[mine].EnergieConsommee := 100;
+  Constructions[mine].ProductionParNiveau[1] := 15;
+  Constructions[mine].ProductionParNiveau[2] := 30;
+  Constructions[mine].ProductionParNiveau[3] := 45;
   SetLength(Constructions[mine].CoutAmelioration, 2);
   SetLength(Constructions[mine].CoutAmelioration[0], 2);
   Constructions[mine].CoutAmelioration[0][0].Ressource := plaques_de_fer;
@@ -100,15 +112,15 @@ begin
   SetLength(Constructions[centrale_elec].CoutConstruction, 3);
   Constructions[centrale_elec].CoutConstruction[0].Ressource := cables_de_cuivre;
   Constructions[centrale_elec].CoutConstruction[0].Quantite := 30;
-  Constructions[centrale_elec].CoutConstruction[0].EnergieProduite := 1200; // Energie produite niveau 1
+  Constructions[centrale_elec].CoutConstruction[0].EnergieProduite := 1200;
   
   Constructions[centrale_elec].CoutConstruction[1].Ressource := plaques_de_fer;
   Constructions[centrale_elec].CoutConstruction[1].Quantite := 10;
-  Constructions[centrale_elec].CoutConstruction[1].EnergieProduite := 2400; // Energie produite niveau 2
+  Constructions[centrale_elec].CoutConstruction[1].EnergieProduite := 2400;
   
   Constructions[centrale_elec].CoutConstruction[2].Ressource := sacs_de_beton;
   Constructions[centrale_elec].CoutConstruction[2].Quantite := 20;
-  Constructions[centrale_elec].CoutConstruction[2].EnergieProduite := 3600; // Energie produite niveau 3
+  Constructions[centrale_elec].CoutConstruction[2].EnergieProduite := 3600;
   
   SetLength(Constructions[centrale_elec].CoutAmelioration, 0);
 
@@ -123,6 +135,57 @@ begin
   Constructions[ascenseur_orbitale].CoutConstruction[2].Quantite := 200;
   Constructions[ascenseur_orbitale].EnergieConsommee := 1000;
   SetLength(Constructions[ascenseur_orbitale].CoutAmelioration, 0);
+
+  // Recettes de production d'apres la WIKI !!!!!!!!
+  Recettes[cuivre].RessourceEntree := minerai_de_cuivre;
+  Recettes[cuivre].QuantiteEntree := 15;
+  Recettes[cuivre].RessourceSortie := cuivre;
+  Recettes[cuivre].QuantiteSortie := 15;
+
+  Recettes[fer].RessourceEntree := minerai_de_fer;
+  Recettes[fer].QuantiteEntree := 30;
+  Recettes[fer].RessourceSortie := fer;
+  Recettes[fer].QuantiteSortie := 15;
+
+  Recettes[cables_de_cuivre].RessourceEntree := cuivre;
+  Recettes[cables_de_cuivre].QuantiteEntree := 15;
+  Recettes[cables_de_cuivre].RessourceSortie := cables_de_cuivre;
+  Recettes[cables_de_cuivre].QuantiteSortie := 5;
+
+  Recettes[plaques_de_fer].RessourceEntree := fer;
+  Recettes[plaques_de_fer].QuantiteEntree := 60;
+  Recettes[plaques_de_fer].RessourceSortie := plaques_de_fer;
+  Recettes[plaques_de_fer].QuantiteSortie := 10;
+
+  Recettes[tuyaux_en_fer].RessourceEntree := fer;
+  Recettes[tuyaux_en_fer].QuantiteEntree := 30;
+  Recettes[tuyaux_en_fer].RessourceSortie := tuyaux_en_fer;
+  Recettes[tuyaux_en_fer].QuantiteSortie := 10;
+
+  Recettes[sacs_de_beton].RessourceEntree := calcaire;
+  Recettes[sacs_de_beton].QuantiteEntree := 15;
+  Recettes[sacs_de_beton].RessourceSortie := sacs_de_beton;
+  Recettes[sacs_de_beton].QuantiteSortie := 5;
+
+  Recettes[acier].RessourceEntree := minerai_de_fer;
+  Recettes[acier].QuantiteEntree := 30;
+  Recettes[acier].RessourceSortie := acier;
+  Recettes[acier].QuantiteSortie := 15;
+
+  Recettes[plaques_renforcees].RessourceEntree := plaques_de_fer;
+  Recettes[plaques_renforcees].QuantiteEntree := 20;
+  Recettes[plaques_renforcees].RessourceSortie := plaques_renforcees;
+  Recettes[plaques_renforcees].QuantiteSortie := 2;
+
+  Recettes[poutres_industrielles].RessourceEntree := plaques_de_fer;
+  Recettes[poutres_industrielles].QuantiteEntree := 20;
+  Recettes[poutres_industrielles].RessourceSortie := poutres_industrielles;
+  Recettes[poutres_industrielles].QuantiteSortie := 2;
+
+  Recettes[fondations].RessourceEntree := sacs_de_beton;
+  Recettes[fondations].QuantiteEntree := 30;
+  Recettes[fondations].RessourceSortie := fondations;
+  Recettes[fondations].QuantiteSortie := 2;
 end;
 
 // Function qui me retourne la production actuelle de l'Energie en fonction du niveau
@@ -130,7 +193,6 @@ end;
 // return Quantité
 function getEnergieProduite(niveau : Integer): Integer;
 begin
-  // Ici je retorune l'energie produite par le system 
   getEnergieProduite := Constructions[centrale_elec].CoutConstruction[niveau - 1].EnergieProduite;
 end;
 
@@ -155,7 +217,7 @@ begin
       if getPlayerResource(Constructions[typologie].CoutConstruction[i].Ressource) >= 
          Constructions[typologie].CoutConstruction[i].Quantite then
       begin
-        good := good + 1; // si il a assez des ressources pour cette condition alors je dit que une condition est vérifié
+        good := good + 1;
       end;
     end;
   end
@@ -175,7 +237,6 @@ begin
     end;
   end;
 
-  // je retourne un boolean en fonction si toutes les conditions ont été vérifié
   haveEnoughResources := (verification + 1 = good);
 end;
 

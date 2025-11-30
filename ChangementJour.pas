@@ -6,7 +6,7 @@ interface
 
 
 
-uses SysUtils;
+uses SysUtils, Resources, Emplacement, Construction, ConstructionType;
 
 type
   Jours = (
@@ -52,6 +52,9 @@ procedure printDateActuelle();
 
 // Procedure pour initialiser la Date;
 procedure initDate();
+
+// Procedure pour changer de jour
+procedure changerDeJour();
 
 
 
@@ -163,6 +166,67 @@ begin
 end;
 
 
+//procedure pour changer de jour
+procedure changerDeJour();
+var
+  i, j: integer;
+  aMineraiNecessaire: boolean;
+begin
+  tDate.jourSemaine := prochainJour(tDate.jourSemaine);
+  tDate.jourMois := tDate.jourMois + 1;
+  
+  if tDate.jourMois > MaxJoursMois[tDate.mois] then
+  begin
+    tDate.jourMois := 1;
+    tDate.mois := prochainMois(tDate.mois);
+    
+    if tDate.mois = janvier then
+      tDate.annee := tDate.annee + 1;
+  end;
+  
+  if getPlayerResource(production_elec) >= getPlayerResource(consommation_elec) then
+  begin
+    for i := 0 to 9 do
+    begin
+      if getEmplacements()[i].typologie = mine then
+      begin
+        addPlayerResource(getEmplacements()[i].minerai, 
+                         Constructions[mine].ProductionParNiveau[getEmplacements()[i].niveau]);
+      end
+      else if getEmplacements()[i].typologie = constructeur then
+      begin
+        aMineraiNecessaire := False;
+        
+        for j := 0 to 9 do
+        begin
+          if (getEmplacements()[j].typologie = mine) and 
+             (getEmplacements()[j].minerai = Recettes[getEmplacements()[i].minerai].RessourceEntree) then
+          begin
+            aMineraiNecessaire := True;
+            Break;
+          end;
+        end;
+        
+        if aMineraiNecessaire then
+        begin
+          if getPlayerResource(Recettes[getEmplacements()[i].minerai].RessourceEntree) >= 
+             Recettes[getEmplacements()[i].minerai].QuantiteEntree then
+          begin
+            removePlayerResource(Recettes[getEmplacements()[i].minerai].RessourceEntree, 
+                                Recettes[getEmplacements()[i].minerai].QuantiteEntree);
+            addPlayerResource(Recettes[getEmplacements()[i].minerai].RessourceSortie, 
+                             Recettes[getEmplacements()[i].minerai].QuantiteSortie);
+          end;
+        end;
+      end;
+    end;
+  end;
+end;
+
+
+
+
+end.
 
 
 end.

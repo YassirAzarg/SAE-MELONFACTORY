@@ -3,7 +3,7 @@ unit Logique;
 interface
 
 uses SysUtils, GestionEcran, Windows, utils, Construction, ConstructionType,
-  Emplacement, Resources, EcranAccueil,ChangementJour;
+  Emplacement, Resources, EcranAccueil, ChangementJour;
 
 procedure renderGame(); // Procedure qui affiche l'interface texte
 procedure quitter(); // Procedure pour quitter du jeu
@@ -570,6 +570,8 @@ begin
           getEmplacements()[indexBat].gisement,
           tPossibilite[choix], False, tRessources[choix2],
           getEmplacements()[indexBat].niveau);
+        addPlayerResource(consommation_elec,
+          Constructions[constructeur].EnergieConsommee);
       end
       // Cas spécial pour la centrale électrique
       else if tPossibilite[choix] = centrale_elec then
@@ -582,13 +584,24 @@ begin
           getEnergieProduite(getEmplacements()[indexBat].niveau));
       end
       // Cas pour la mine et autres bâtiments
-      else
+      else if tPossibilite[choix] = mine then
       begin
         setConstructionParametre(indexBat, getEmplacements()[indexBat].decouvert,
           getEmplacements()[indexBat].gisement,
           tPossibilite[choix], False,
           traiterResource(getEmplacements()[indexBat].minerai),
           getEmplacements()[indexBat].niveau);
+        addPlayerResource(consommation_elec, Constructions[mine].EnergieConsommee);
+      end
+      // Cas pour l'ascenseur orbital
+      else if tPossibilite[choix] = ascenseur_orbitale then
+      begin
+        setConstructionParametre(indexBat, getEmplacements()[indexBat].decouvert,
+          getEmplacements()[indexBat].gisement,
+          tPossibilite[choix], False, aucun,
+          getEmplacements()[indexBat].niveau);
+        addPlayerResource(consommation_elec,
+          Constructions[ascenseur_orbitale].EnergieConsommee);
       end;
 
       removeRessources(tPossibilite[choix], getEmplacements()[indexBat].niveau);
@@ -603,7 +616,6 @@ begin
   end;
 
 end;
-
 
 // Fonction helper qui m'aide a faire un choix au niveau des resources que je veux
 function ConstructeurChoice(): integer;
@@ -686,6 +698,7 @@ begin
 end;
 
 // procedure pour upgrade les batiments
+// procedure pour upgrade les batiments
 procedure upgradeBatiment();
 
 var
@@ -706,13 +719,18 @@ begin
 
   choix := choix - 1;
 
-  if (getEmplacements()[choix].typologie <> aucune) then
+  if (getEmplacements()[choix].typologie <> aucune) and
+    (getEmplacements()[choix].typologie <> hub) and
+    (getEmplacements()[choix].typologie <> centrale_elec) and
+    (getEmplacements()[choix].typologie <> ascenseur_orbitale) then
   begin
     if getEmplacements()[choix].niveau < 3 then
     begin
       if haveEnoughResources(getEmplacements()[choix].typologie,
-        getEmplacements()[choix].niveau) then
+        getEmplacements()[choix].niveau + 1) then
       begin
+        removeRessources(getEmplacements()[choix].typologie,
+          getEmplacements()[choix].niveau + 1);
         setConstructionParametre(choix, getEmplacements()[choix].decouvert,
           getEmplacements()[choix].gisement, getEmplacements()[choix].typologie,
           False, getEmplacements()[choix].minerai, getEmplacements()[choix].niveau + 1);
@@ -737,7 +755,7 @@ begin
   else
   begin
     AlertInterfaceGame('Impossible d''améliorer',
-      'Ce n''est pas un bâtiment !', red);
+      'Ce bâtiment ne peut pas être amélioré !', red);
     refreshInterfaceGame;
   end;
 
@@ -749,7 +767,7 @@ var
   choixStr: string;
   choix: integer;
   choix2: integer;
-  tRessources : array of resourcesC;
+  tRessources: array of resourcesC;
 
 begin
 
@@ -770,7 +788,8 @@ begin
 
   if choixStr = '' then
   begin
-    AlertInterfaceGame('Impossible de effectuer l''action', '   Aucune valeur saisie', red);
+    AlertInterfaceGame('Impossible de effectuer l''action',
+      '   Aucune valeur saisie', red);
     refreshInterfaceGame();
   end;
 
@@ -779,20 +798,23 @@ begin
   choix := choix - 1;
 
   if getEmplacements()[choix].typologie = constructeur then
-    begin
+  begin
 
-      choix2 := ConstructeurChoice();
+    choix2 := ConstructeurChoice();
 
-      setConstructionParametre(choix, getEmplacements()[choix].decouvert, getEmplacements()[choix].gisement, constructeur, False, tRessources[choix2], getEmplacements()[choix].niveau);
-      AlertInterfaceGame('Changement effectuer !', 'Nice !', green);
-      refreshInterfaceGame;
-    end
+    setConstructionParametre(choix, getEmplacements()[choix].decouvert,
+      getEmplacements()[choix].gisement, constructeur, False, tRessources[choix2],
+      getEmplacements()[choix].niveau);
+    AlertInterfaceGame('Changement effectuer !', 'Nice !', green);
+    refreshInterfaceGame;
+  end
   else
-    begin
-      AlertInterfaceGame('Impossible de effectuer l''action', 'Ce n''est pas un constructeur ! ', red);
-      refreshInterfaceGame;
-    end;
-      
+  begin
+    AlertInterfaceGame('Impossible de effectuer l''action',
+      'Ce n''est pas un constructeur ! ', red);
+    refreshInterfaceGame;
+  end;
+
 end;
 
 
@@ -831,11 +853,13 @@ begin
     '6':
     begin
       refreshInterfaceGame();
+
     end;
     '7':
     begin
       // action pour 7
-      //changerDeJour();
+      changerDeJour();
+      refreshInterfaceGame();
     end;
     '8':
     begin
@@ -964,7 +988,6 @@ begin
   InitialiserConstructions();
   initResources();
   initInterfaceGame();
-
 
 end;
 
