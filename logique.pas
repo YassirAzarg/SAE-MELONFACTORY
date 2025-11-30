@@ -605,7 +605,7 @@ begin
 end;
 
 
-
+// Fonction helper qui m'aide a faire un choix au niveau des resources que je veux
 function ConstructeurChoice(): integer;
 var
   choix: integer;
@@ -685,7 +685,7 @@ begin
   ConstructeurChoice := choix;
 end;
 
-
+// procedure pour upgrade les batiments
 procedure upgradeBatiment();
 
 var
@@ -743,6 +743,7 @@ begin
 
 end;
 
+// procedure qui va permettre de changer de resources pour les constructeur
 procedure changerDeResource();
 var
   choixStr: string;
@@ -794,13 +795,17 @@ begin
       
 end;
 
+
+// Procedure qui gére les choix dans le interface de jeu
 procedure manageGame(val: string);
 begin
   case val of
     '0':
     begin
-      retourmenuGame();
+
       // Procedure retour menu (avec retour possible a la partie actuelle)
+      retourmenuGame();
+
     end;
     '1':
     begin
@@ -821,15 +826,16 @@ begin
     end;
     '5':
     begin
-      // action pour 5
+      refreshInterfaceGame();
     end;
     '6':
     begin
-      // action pour 6
+      refreshInterfaceGame();
     end;
     '7':
     begin
       // action pour 7
+      changerDeJour();
     end;
     '8':
     begin
