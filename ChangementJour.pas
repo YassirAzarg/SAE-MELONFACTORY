@@ -5,8 +5,7 @@ interface
 
 
 
-
-uses SysUtils, Resources, Emplacement, Construction, ConstructionType;
+uses SysUtils, Resources, Emplacement, Construction, ConstructionType, ZoneType;
 
 type
   Jours = (
@@ -171,6 +170,8 @@ procedure changerDeJour();
 var
   i, j: integer;
   aMineraiNecessaire: boolean;
+  z: TypeZone;
+  zoneTemp: TypeZone;
 begin
   tDate.jourSemaine := prochainJour(tDate.jourSemaine);
   tDate.jourMois := tDate.jourMois + 1;
@@ -186,43 +187,51 @@ begin
   
   if getPlayerResource(production_elec) >= getPlayerResource(consommation_elec) then
   begin
-    for i := 0 to 9 do
+    zoneTemp := getZoneActuelle();
+    
+    for z := Low(TypeZone) to High(TypeZone) do
     begin
-      if getEmplacements()[i].typologie = mine then
+      setZoneActuelle(z);
+      
+      for i := 0 to 9 do
       begin
-        addPlayerResource(getEmplacements()[i].minerai, 
-                         Constructions[mine].ProductionParNiveau[getEmplacements()[i].niveau]);
-      end
-      else if getEmplacements()[i].typologie = constructeur then
-      begin
-        aMineraiNecessaire := False;
-        
-        for j := 0 to 9 do
+        if getEmplacements()[i].typologie = mine then
         begin
-          if (getEmplacements()[j].typologie = mine) and 
-             (getEmplacements()[j].minerai = Recettes[getEmplacements()[i].minerai].RessourceEntree) then
+          addPlayerResource(getEmplacements()[i].minerai, 
+                           Constructions[mine].ProductionParNiveau[getEmplacements()[i].niveau]);
+        end
+        else if getEmplacements()[i].typologie = constructeur then
+        begin
+          aMineraiNecessaire := False;
+          
+          for j := 0 to 9 do
           begin
-            aMineraiNecessaire := True;
-            Break;
+            if (getEmplacements()[j].typologie = mine) and 
+               (getEmplacements()[j].minerai = Recettes[getEmplacements()[i].minerai].RessourceEntree) then
+            begin
+              aMineraiNecessaire := True;
+              Break;
+            end;
           end;
-        end;
-        
-        if aMineraiNecessaire then
-        begin
-          if getPlayerResource(Recettes[getEmplacements()[i].minerai].RessourceEntree) >= 
-             Recettes[getEmplacements()[i].minerai].QuantiteEntree then
+          
+          if aMineraiNecessaire then
           begin
-            removePlayerResource(Recettes[getEmplacements()[i].minerai].RessourceEntree, 
-                                Recettes[getEmplacements()[i].minerai].QuantiteEntree);
-            addPlayerResource(Recettes[getEmplacements()[i].minerai].RessourceSortie, 
-                             Recettes[getEmplacements()[i].minerai].QuantiteSortie);
+            if getPlayerResource(Recettes[getEmplacements()[i].minerai].RessourceEntree) >= 
+               Recettes[getEmplacements()[i].minerai].QuantiteEntree then
+            begin
+              removePlayerResource(Recettes[getEmplacements()[i].minerai].RessourceEntree, 
+                                  Recettes[getEmplacements()[i].minerai].QuantiteEntree);
+              addPlayerResource(Recettes[getEmplacements()[i].minerai].RessourceSortie, 
+                               Recettes[getEmplacements()[i].minerai].QuantiteSortie);
+            end;
           end;
         end;
       end;
     end;
+    
+    setZoneActuelle(zoneTemp);
   end;
 end;
-
 
 
 

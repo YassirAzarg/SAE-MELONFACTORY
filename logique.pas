@@ -3,7 +3,7 @@ unit Logique;
 interface
 
 uses SysUtils, GestionEcran, Windows, utils, Construction, ConstructionType,
-  Emplacement, Resources, EcranAccueil, ChangementJour;
+  Emplacement, Resources, EcranAccueil, ChangementJour, ZoneType;
 
 procedure renderGame(); // Procedure qui affiche l'interface texte
 procedure quitter(); // Procedure pour quitter du jeu
@@ -39,6 +39,10 @@ function TypologieToString(t: TypeConstructions): string;
 
 // Fonction qui permet de faire le choix au niveau du type de Constructeur
 function ConstructeurChoice(): integer;
+
+// Procedure pour changer de zone
+procedure changerDeZone();
+
 
 implementation
 
@@ -116,7 +120,7 @@ begin
   Write('INVENTAIRE DE LA ZONE');
 
   deplacerCurseurXY(77, 3);
-  Write('ZONE : Zone de départ');
+  Write('ZONE : ', getZoneLabel(getZoneActuelle()));
 
   deplacerCurseurXY(153, 3);
   printDateActuelle();
@@ -207,7 +211,7 @@ begin
   Write('INVENTAIRE DE LA ZONE');
 
   deplacerCurseurXY(77, 3);
-  Write('ZONE : Zone de départ');
+  Write('ZONE : ', getZoneLabel(getZoneActuelle()));
 
   deplacerCurseurXY(153, 3);
   printDateActuelle();
@@ -298,7 +302,7 @@ begin
   Write('INVENTAIRE DE LA ZONE');
 
   deplacerCurseurXY(77, 3);
-  Write('ZONE : Zone de départ');
+  Write('ZONE : ', getZoneLabel(getZoneActuelle()));
 
   deplacerCurseurXY(153, 3);
   printDateActuelle();
@@ -359,7 +363,7 @@ begin
   Write('INVENTAIRE DE LA ZONE');
 
   deplacerCurseurXY(77, 3);
-  Write('ZONE : Zone de départ');
+  Write('ZONE : ', getZoneLabel(getZoneActuelle()));
 
   deplacerCurseurXY(153, 3);
   printDateActuelle();
@@ -421,7 +425,7 @@ begin
   Write('INVENTAIRE DE LA ZONE');
 
   deplacerCurseurXY(77, 3);
-  Write('ZONE : Zone de départ');
+  Write('ZONE : ', getZoneLabel(getZoneActuelle()));
 
   deplacerCurseurXY(153, 3);
   printDateActuelle();
@@ -818,6 +822,42 @@ begin
 end;
 
 
+procedure changerDeZone();
+var
+  tMessage: array of tLigne;
+  choixStr: string;
+  choix: integer;
+begin
+  SetLength(tMessage, 4);
+  tMessage[0].pos.x := 6;
+  tMessage[0].pos.y := 28;
+  tMessage[0].texte := 'Dans quelle zone voulez-vous aller ?';
+
+  tMessage[1].pos.x := 8;
+  tMessage[1].pos.y := 29;
+  tMessage[1].texte := '1/ Zone de départ';
+
+  tMessage[2].pos.x := 8;
+  tMessage[2].pos.y := 30;
+  tMessage[2].texte := '2/ Zone du désert rocheux';
+
+  tMessage[3].pos.x := 8;
+  tMessage[3].pos.y := 31;
+  tMessage[3].texte := '3/ Zone de la forêt nordique';
+
+  choixStr := MultiSelectionInterfaceGame(tMessage);
+  choix := StrToInt(choixStr);
+
+  case choix of
+    1: setZoneActuelle(zone_depart);
+    2: setZoneActuelle(zone_desert);
+    3: setZoneActuelle(zone_foret);
+  end;
+
+  refreshInterfaceGame();
+end;
+
+
 // Procedure qui gére les choix dans le interface de jeu
 procedure manageGame(val: string);
 begin
@@ -848,12 +888,12 @@ begin
     end;
     '5':
     begin
+      changerDeZone();
       refreshInterfaceGame();
     end;
     '6':
     begin
       refreshInterfaceGame();
-
     end;
     '7':
     begin
@@ -1026,7 +1066,6 @@ begin
     refreshInterfaceGame();
   end;
 end;
-
 
 
 end.

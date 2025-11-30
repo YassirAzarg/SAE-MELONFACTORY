@@ -2,7 +2,7 @@ unit Emplacement;
 
 interface
 
-uses SysUtils, GestionEcran, Resources, utils, ConstructionType, windows;
+uses SysUtils, GestionEcran, Resources, utils, ConstructionType, windows, ZoneType;
 
 type
   EmplacementC = record
@@ -31,7 +31,6 @@ procedure dessineEmplacement(); // Procedure pour Dessiner les emplacement
 //Function qui return les batiments
 function getEmplacements(): TEmplacementsArray;
 
-
 // Procedure pour explorer une Zone
 procedure explorerZone();
 
@@ -48,42 +47,61 @@ procedure setConstructionParametre(indexConst: integer; decouvert: boolean;
   gisement: boolean; typologie: TypeConstructions; actif: boolean;
   minerai: resourcesC; niveau: integer);
 
+procedure setZoneActuelle(zone: TypeZone);
+function getZoneActuelle(): TypeZone;
+function getZoneLabel(zone: TypeZone): string;
 
 implementation
-
 
 const
   MIN_EMPLACEMENT_GISEMENT = 2; // Min de gisement au départ
   MAX_EMPLACEMENT_GISEMENT = 2; //Max de gisement au départ
 
 var
-  tEmplacement: array of EmplacementC;
+  tEmplacement: array[TypeZone] of array of EmplacementC;
+  zoneActuelle: TypeZone;
 
   posEmplacement: array[0..9] of positionEmplacement;
 
 
-procedure initHUB();
-
+// Procedure qui me permet de set la Zone
+procedure setZoneActuelle(zone: TypeZone);
 begin
-  tEmplacement[0].niveau := 0;
-  tEmplacement[0].decouvert := True;
-  tEmplacement[0].gisement := False;
-  tEmplacement[0].typologie := hub;
-  tEmplacement[0].actif := False; // Toujours blanc
-  tEmplacement[0].minerai := aucun;
+  zoneActuelle := zone;
+end;
 
+function getZoneActuelle(): TypeZone;
+begin
+  getZoneActuelle := zoneActuelle;
+end;
+
+function getZoneLabel(zone: TypeZone): string;
+begin
+  case zone of
+    zone_depart: getZoneLabel := 'Zone de départ';
+    zone_desert: getZoneLabel := 'Zone du désert rocheux';
+    zone_foret: getZoneLabel := 'Zone de la forêt nordique';
+  end;
+end;
+
+procedure initHUB();
+begin
+  tEmplacement[zoneActuelle][0].niveau := 0;
+  tEmplacement[zoneActuelle][0].decouvert := True;
+  tEmplacement[zoneActuelle][0].gisement := False;
+  tEmplacement[zoneActuelle][0].typologie := hub;
+  tEmplacement[zoneActuelle][0].actif := False; // Toujours blanc
+  tEmplacement[zoneActuelle][0].minerai := aucun;
 end;
 
 procedure initEmplacement();
-
 var
   tDeja: array[1..9] of boolean;
   i, r, r2, temp: integer;
   minDispo: array[0..1] of resourcesC;
   // Je donne au programme max 2 resources possible pour les gisement
+  z: TypeZone;
 begin
-  SetLength(tEmplacement, 10);
-  // Nombre d'emplacement que je veux 10 = le nombre de indexConst dans le tableau
 
   posEmplacement[0].x := 54;
   posEmplacement[0].y := 5;
@@ -94,7 +112,6 @@ begin
   posEmplacement[1].y := 12;
   posEmplacement[1].x2 := 126;
   posEmplacement[1].y2 := 18;
-
 
   posEmplacement[2].x := 54;
   posEmplacement[2].y := 19;
@@ -136,136 +153,159 @@ begin
   posEmplacement[9].x2 := 200;
   posEmplacement[9].y2 := 39;
 
-  minDispo[0] := fer;
-  minDispo[1] := cuivre;
-
-  for i := 1 to 9 do
-  begin
-    tEmplacement[i].niveau := 1;
-    tEmplacement[i].decouvert := False;
-    tEmplacement[i].gisement := False;
-    tEmplacement[i].typologie := aucune;
-    tEmplacement[i].actif := False;
-    tEmplacement[i].minerai := aucun;
-  end;
-
-  for i := 1 to High(tDeja) do
-  begin
-    tDeja[i] := False;
-  end;
-
+  // Initialiser le générateur aléatoire UNE SEULE FOIS
   Randomize();
 
-  // Nombre de Gisement disponible au départ
-  r := mathRandom(MIN_EMPLACEMENT_GISEMENT, MAX_EMPLACEMENT_GISEMENT);
-
-
-  initHUB();
-
-  for i := 1 to r do
+  // Maintenant on initialise chaque zone avec ses propres gisements aléatoires
+  for z := Low(TypeZone) to High(TypeZone) do
   begin
-    repeat
-      r2 := mathRandom(1, 9);
-    until not tDeja[r2];
+    SetLength(tEmplacement[z], 10);
+    // Nombre d'emplacement que je veux 10 = le nombre de indexConst dans le tableau
 
-    temp := mathRandom(0, 1);
-
-    // Générer des gisements casuel
-    if minDispo[temp] = aucun then
-    begin
-      if minDispo[0] <> aucun then
-        temp := 0
-      else if minDispo[1] <> aucun then
-        temp := 1;
+    case z of
+      zone_depart:
+      begin
+        minDispo[0] := fer;
+        minDispo[1] := cuivre;
+      end;
+      zone_desert:
+      begin
+        minDispo[0] := calcaire;
+        minDispo[1] := fer;
+      end;
+      zone_foret:
+      begin
+        minDispo[0] := cuivre;
+        minDispo[1] := charbon;
+      end;
     end;
 
-    if minDispo[temp] <> aucun then
+    for i := 1 to 9 do
     begin
-      tEmplacement[r2].gisement := True;
-      tEmplacement[r2].decouvert := True;
-      // je met true pour que je indique que l'emplacement est decouvert 
-      tEmplacement[r2].actif := True;
-      tEmplacement[r2].minerai := minDispo[temp];
-      tEmplacement[r2].niveau := mathRandom(1, 3);
-      // Je choisi un niveau random de purté
+      tEmplacement[z][i].niveau := 1;
+      tEmplacement[z][i].decouvert := False;
+      tEmplacement[z][i].gisement := False;
+      tEmplacement[z][i].typologie := aucune;
+      tEmplacement[z][i].actif := False;
+      tEmplacement[z][i].minerai := aucun;
+    end;
 
-      minDispo[temp] := aucun;
-      tDeja[r2] := True;
+    // IMPORTANT: Réinitialiser tDeja pour CHAQUE zone
+    for i := 1 to High(tDeja) do
+    begin
+      tDeja[i] := False;
+    end;
+
+    // Nombre de Gisement disponible au départ
+    r := mathRandom(MIN_EMPLACEMENT_GISEMENT, MAX_EMPLACEMENT_GISEMENT);
+
+    zoneActuelle := z;
+    initHUB();
+
+    for i := 1 to r do
+    begin
+      repeat
+        r2 := mathRandom(1, 9);
+      until not tDeja[r2];
+
+      temp := mathRandom(0, 1);
+
+      // Générer des gisements casuel
+      if minDispo[temp] = aucun then
+      begin
+        if minDispo[0] <> aucun then
+          temp := 0
+        else if minDispo[1] <> aucun then
+          temp := 1;
+      end;
+
+      if minDispo[temp] <> aucun then
+      begin
+        tEmplacement[z][r2].gisement := True;
+        tEmplacement[z][r2].decouvert := True;
+        // je met true pour que je indique que l'emplacement est decouvert 
+        tEmplacement[z][r2].actif := True;
+        tEmplacement[z][r2].minerai := minDispo[temp];
+        tEmplacement[z][r2].niveau := mathRandom(1, 3);
+        // Je choisi un niveau random de purté
+
+        minDispo[temp] := aucun;
+        tDeja[r2] := True;
+      end;
     end;
   end;
 
-
-
+  zoneActuelle := zone_depart;
   dessineEmplacement();
-
 end;
 
 procedure dessineEmplacement();
 var
   i: integer;
 begin
-  for i := 0 to High(tEmplacement) do
+  for i := 0 to High(tEmplacement[zoneActuelle]) do
   begin
-    if not tEmplacement[i].decouvert then
+    if not tEmplacement[zoneActuelle][i].decouvert then
     begin
       dessinerCadreXY(posEmplacement[i].x, posEmplacement[i].y,
         posEmplacement[i].x2, posEmplacement[i].y2, simple, 8, black);
       deplacerCurseurXY(posEmplacement[i].x + 23, posEmplacement[i].y + 3);
       Write('EMPLACEMENT NON DECOUVERT');
     end
-    else if tEmplacement[i].typologie = hub then
+    else if tEmplacement[zoneActuelle][i].typologie = hub then
     begin
       dessinerCadreXY(posEmplacement[i].x, posEmplacement[i].y,
         posEmplacement[i].x2, posEmplacement[i].y2, simple, white, black);
       deplacerCurseurXY(posEmplacement[i].x + 4, posEmplacement[i].y + 2);
       Write('BATIMENT : HUB');
     end
-    else if tEmplacement[i].gisement and (tEmplacement[i].minerai <> aucun) and
-      tEmplacement[i].actif then
+    else if tEmplacement[zoneActuelle][i].gisement and
+      (tEmplacement[zoneActuelle][i].minerai <> aucun) and
+      tEmplacement[zoneActuelle][i].actif then
     begin
       dessinerCadreXY(posEmplacement[i].x, posEmplacement[i].y,
         posEmplacement[i].x2, posEmplacement[i].y2, simple, 6, black);
 
-      if tEmplacement[i].typologie = aucune then
+      if tEmplacement[zoneActuelle][i].typologie = aucune then
       begin
         deplacerCurseurXY(posEmplacement[i].x + 4, posEmplacement[i].y + 2);
         Write('GISEMENT NON EXPLOITE');
         deplacerCurseurXY(posEmplacement[i].x + 38, posEmplacement[i].y + 2);
-        Write('NIVEAU : ', tEmplacement[i].niveau);
-        if tEmplacement[i].decouvert then
+        Write('NIVEAU : ', tEmplacement[zoneActuelle][i].niveau);
+        if tEmplacement[zoneActuelle][i].decouvert then
         begin
           deplacerCurseurXY(posEmplacement[i].x + 4, posEmplacement[i].y + 4);
-          Write('MINERAI : ', getResourceLabel(tEmplacement[i].minerai));
+          Write('MINERAI : ', getResourceLabel(tEmplacement[zoneActuelle][i].minerai));
         end;
       end;
 
     end
-    else if tEmplacement[i].typologie = mine then
+    else if tEmplacement[zoneActuelle][i].typologie = mine then
     begin
       dessinerCadreXY(posEmplacement[i].x, posEmplacement[i].y,
         posEmplacement[i].x2, posEmplacement[i].y2, simple, white, black);
       deplacerCurseurXY(posEmplacement[i].x + 4, posEmplacement[i].y + 2);
       SetConsoleOutputCP(CP_UTF8);
-      Write('BATIMENT   : ', getLabelConstruction(tEmplacement[i].typologie));
+      Write('BATIMENT   : ', getLabelConstruction(tEmplacement[zoneActuelle][i].typologie));
       deplacerCurseurXY(posEmplacement[i].x + 38, posEmplacement[i].y + 2);
-      Write('NIVEAU : ', tEmplacement[i].niveau);
+      Write('NIVEAU : ', tEmplacement[zoneActuelle][i].niveau);
       deplacerCurseurXY(posEmplacement[i].x + 4, posEmplacement[i].y + 4);
-      Write('PRODUCTION   : ', getResourceLabel(tEmplacement[i].minerai));
+      Write('PRODUCTION   : ', getResourceLabel(tEmplacement[zoneActuelle][i].minerai));
       SetConsoleOutputCP(850);
     end
 
-    else if (tEmplacement[i].typologie <> aucune) and
-      (tEmplacement[i].typologie <> mine) then
+    else if (tEmplacement[zoneActuelle][i].typologie <> aucune) and
+      (tEmplacement[zoneActuelle][i].typologie <> mine) then
     begin
       dessinerCadreXY(posEmplacement[i].x, posEmplacement[i].y,
         posEmplacement[i].x2, posEmplacement[i].y2, simple, white, black);
       deplacerCurseurXY(posEmplacement[i].x + 4, posEmplacement[i].y + 2);
       SetConsoleOutputCP(CP_UTF8);
-      Write('BATIMENT   : ', getLabelConstruction(tEmplacement[i].typologie));
+      Write('BATIMENT   : ', getLabelConstruction(tEmplacement[zoneActuelle][i].typologie));
       deplacerCurseurXY(posEmplacement[i].x + 38, posEmplacement[i].y + 2);
-      Write('NIVEAU : ', tEmplacement[i].niveau);
+      Write('NIVEAU : ', tEmplacement[zoneActuelle][i].niveau);
       deplacerCurseurXY(posEmplacement[i].x + 4, posEmplacement[i].y + 4);
-      Write('PRODUCTION   : ', getResourceLabel(tEmplacement[i].minerai));
+      Write('PRODUCTION   : ', getResourceLabel(tEmplacement[zoneActuelle][i].minerai));
       SetConsoleOutputCP(850);
     end
 
@@ -283,26 +323,24 @@ begin
   end;
 end;
 
-
 function getEmplacements(): TEmplacementsArray;
 begin
-  getEmplacements := tEmplacement;
+  getEmplacements := tEmplacement[zoneActuelle];
 end;
 
 procedure setConstructionParametre(indexConst: integer; decouvert: boolean;
   gisement: boolean; typologie: TypeConstructions; actif: boolean;
   minerai: resourcesC; niveau: integer);
 begin
-  if (indexConst < 0) or (indexConst > High(tEmplacement)) then
+  if (indexConst < 0) or (indexConst > High(tEmplacement[zoneActuelle])) then
     Exit;
-  tEmplacement[indexConst].decouvert := decouvert;
-  tEmplacement[indexConst].gisement := gisement;
-  tEmplacement[indexConst].typologie := typologie;
-  tEmplacement[indexConst].actif := actif;
-  tEmplacement[indexConst].minerai := minerai;
-  tEmplacement[indexConst].niveau := niveau;
+  tEmplacement[zoneActuelle][indexConst].decouvert := decouvert;
+  tEmplacement[zoneActuelle][indexConst].gisement := gisement;
+  tEmplacement[zoneActuelle][indexConst].typologie := typologie;
+  tEmplacement[zoneActuelle][indexConst].actif := actif;
+  tEmplacement[zoneActuelle][indexConst].minerai := minerai;
+  tEmplacement[zoneActuelle][indexConst].niveau := niveau;
 end;
-
 
 procedure explorerZone();
 var
@@ -312,11 +350,26 @@ var
   i, Count: integer;
   minDispo: array[0..1] of resourcesC;
 begin
-  if Length(tEmplacement) = 0 then
+  if Length(tEmplacement[zoneActuelle]) = 0 then
     Exit;
 
-  minDispo[0] := fer;
-  minDispo[1] := cuivre;
+  case zoneActuelle of // La je choisi les minerai dispo en fonction de la zone
+    zone_depart:
+    begin
+      minDispo[0] := fer;
+      minDispo[1] := cuivre;
+    end;
+    zone_desert:
+    begin
+      minDispo[0] := calcaire;
+      minDispo[1] := fer;
+    end;
+    zone_foret:
+    begin
+      minDispo[0] := cuivre;
+      minDispo[1] := charbon;
+    end;
+  end;
 
   c1 := Random(2); // 0 ou 1 : découvrir ou pas
   c3 := Random(3); // 0 ou 1 : Gisement ou pas
@@ -324,9 +377,10 @@ begin
   begin
     // Créer une liste des emplacements découvrables
     Count := 0;
-    SetLength(decouvrables, Length(tEmplacement));
-    for i := 0 to High(tEmplacement) do
-      if not tEmplacement[i].decouvert and (tEmplacement[i].typologie <> hub) then
+    SetLength(decouvrables, Length(tEmplacement[zoneActuelle]));
+    for i := 0 to High(tEmplacement[zoneActuelle]) do
+      if not tEmplacement[zoneActuelle][i].decouvert and
+        (tEmplacement[zoneActuelle][i].typologie <> hub) then
       begin
         decouvrables[Count] := i;
         Inc(Count);
@@ -337,13 +391,15 @@ begin
 
     // Tirer un emplacement au hasard parmi les découvrables
     c2 := decouvrables[Random(Count)];
-    tEmplacement[c2].decouvert := True;
+    tEmplacement[zoneActuelle][c2].decouvert := True;
     if c3 = 1 then
     begin
-      tEmplacement[c2].gisement := True;
-      tEmplacement[c2].minerai := minDispo[c3];
+      tEmplacement[zoneActuelle][c2].gisement := True;
+      tEmplacement[zoneActuelle][c2].minerai := minDispo[c3];
     end;
   end;
 end;
+
+
 
 end.
