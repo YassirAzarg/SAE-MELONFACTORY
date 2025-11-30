@@ -2,7 +2,8 @@ unit Logique;
 
 interface
 
-uses SysUtils, GestionEcran, Windows, utils, Construction,ConstructionType, Emplacement, Resources, EcranAccueil;
+uses SysUtils, GestionEcran, Windows, utils, Construction, ConstructionType,
+  Emplacement, Resources, EcranAccueil;
 
 procedure renderGame(); // Procedure qui affiche l'interface texte
 procedure quitter(); // Procedure pour quitter du jeu
@@ -14,7 +15,7 @@ procedure writeResources(x, y: integer; str: string; resource: resourcesC;
   couleur: byte);
 
 //Gérer le jeu
-procedure manageGame(val : String);
+procedure manageGame(val: string);
 
 // Procedure qui refresh la page des resources
 procedure refreshInterfaceGame();
@@ -23,15 +24,21 @@ procedure refreshInterfaceGame();
 procedure menuGame();
 
 //Fonction qui me permet de ecrire des texte lors de la selection et qui retourne un choix
-function SelectionInterfaceGame(str : String) : String;
+function SelectionInterfaceGame(str: string): string;
 
 //Fonction qui ecris une alerte 
-procedure AlertInterfaceGame(str,subtitle : String; color : Byte);
+procedure AlertInterfaceGame(str, subtitle: string; color: byte);
 
-procedure SelectionBatiment(indexBat : Integer);
 
+//Fonction pour choisir le type de batiment et la gestion
+procedure SelectionBatiment(indexBat: integer);
+
+
+// Fonction qui returne le label des typologies
 function TypologieToString(t: TypeConstructions): string;
 
+// Fonction qui permet de faire le choix au niveau du type de Constructeur
+function ConstructeurChoice() : Integer;
 
 implementation
 
@@ -73,8 +80,8 @@ begin
     '1': renderGame();
     '2': quitter();
     '3': refreshInterfaceGame();
-  else
-    quitter();
+    else
+      quitter();
   end;
 
 end;
@@ -94,8 +101,8 @@ end;
 
 
 procedure initInterfaceGame();
-var  
-  choix : String;
+var
+  choix: string;
 begin
   effacerEcran();
   couleurTexte(white);
@@ -185,8 +192,8 @@ end;
 
 
 procedure refreshInterfaceGame();
-var  
-  choix : String;
+var
+  choix: string;
 begin
   effacerEcran();
   couleurTexte(white);
@@ -275,9 +282,9 @@ begin
 end;
 
 
-function SelectionInterfaceGame(str : String): String;
-var  
-  choix : String;
+function SelectionInterfaceGame(str: string): string;
+var
+  choix: string;
 begin
   effacerEcran();
   couleurTexte(white);
@@ -319,7 +326,7 @@ begin
   writeResources(6, 23, 'Poutres industrielles', poutres_industrielles, white);
   writeResources(6, 24, 'Fondations', fondations, white);
 
-  deplacerCurseurXY(9,31);
+  deplacerCurseurXY(9, 31);
   WriteLn(str);
   SetConsoleOutputCP(850);
   dessinerCadreXY(41, 37, 51, 39, simple, white, black);
@@ -331,15 +338,14 @@ begin
   ReadLn(choix);
 
   SelectionInterfaceGame := choix;
-  
 
 end;
 
 
 function MultiSelectionInterfaceGame(msg: array of tLigne): string;
-var  
+var
   choix: string;
-  i: Integer;
+  i: integer;
 begin
   effacerEcran();
   couleurTexte(white);
@@ -396,12 +402,12 @@ begin
   ReadLn(choix);
 
   MultiSelectionInterfaceGame := choix;
-  
+
 end;
 
-procedure AlertInterfaceGame(str, subtitle : String; color : Byte);
-var  
-  choix : String;
+procedure AlertInterfaceGame(str, subtitle: string; color: byte);
+var
+  choix: string;
 begin
   effacerEcran();
   couleurTexte(white);
@@ -444,9 +450,9 @@ begin
   writeResources(6, 24, 'Fondations', fondations, white);
 
   couleurTexte(color);
-  deplacerCurseurXY(9,31);
+  deplacerCurseurXY(9, 31);
   Write(str);
-  deplacerCurseurXY(9,32);
+  deplacerCurseurXY(9, 32);
   Write(subtitle);
   couleurTexte(white);
   SetConsoleOutputCP(850);
@@ -470,12 +476,14 @@ end;
 
 
 //@param indexBat entier qui indique l'Emplacement
-procedure SelectionBatiment(indexBat : Integer);
+procedure SelectionBatiment(indexBat: integer);
 var
   choixStr: string;
   choix: integer;
-  tMessage : array of tLigne;
-  tPossibilite : array of TypeConstructions;
+  choix2: integer;
+  tMessage: array of tLigne;
+  tPossibilite: array of TypeConstructions;
+  tRessources: array of resourcesC;
 begin
 
   SetLength(tMessage, 5);
@@ -505,30 +513,49 @@ begin
   tPossibilite[2] := centrale_elec;
   tPossibilite[3] := ascenseur_orbitale;
 
+  SetLength(tRessources, 10);
+
+  tRessources[0] := cuivre;
+  tRessources[1] := fer;
+  tRessources[2] := cables_de_cuivre;
+  tRessources[3] := plaques_de_fer;
+  tRessources[4] := tuyaux_en_fer;
+  tRessources[5] := sacs_de_beton;
+  tRessources[6] := acier;
+  tRessources[7] := plaques_renforcees;
+  tRessources[8] := poutres_industrielles;
+  tRessources[9] := fondations;
+
+
   choixStr := MultiSelectionInterfaceGame(tMessage);
   choix := StrToInt(choixStr) - 1;
 
   if not getEmplacements()[indexBat].decouvert then
   begin
-    AlertInterfaceGame('Impossible de construire ici', ' Emplacement non decouvert', red); 
+    AlertInterfaceGame('Impossible de construire ici',
+      ' Emplacement non decouvert', red);
     refreshInterfaceGame();
   end
   else if getEmplacements()[indexBat].niveau = 3 then
   begin
     AlertInterfaceGame('Impossible de construire', ' Niveau maximum atteint', red);
     refreshInterfaceGame();
-  end 
+  end
   else if getEmplacements()[indexBat].typologie = hub then
   begin
-    AlertInterfaceGame('Impossible de construire ici', TypologieToString(getEmplacements()[indexBat].typologie), red); 
+    AlertInterfaceGame('Impossible de construire ici',
+      TypologieToString(getEmplacements()[indexBat].typologie), red);
     refreshInterfaceGame();
   end
-  else if (getEmplacements()[indexBat].typologie <> aucune) OR (getEmplacements()[indexBat].gisement AND getEmplacements()[indexBat].decouvert) then
+  else if (getEmplacements()[indexBat].typologie <> aucune) or
+    (getEmplacements()[indexBat].gisement and getEmplacements()[indexBat].decouvert) then
   begin
     if haveEnoughResources(tPossibilite[choix], getEmplacements()[indexBat].niveau) then
     begin
-      setConstructionParametre(indexBat, getEmplacements()[indexBat].decouvert, getEmplacements()[indexBat].gisement,
-        tPossibilite[choix], False, traiterResource(getEmplacements()[indexBat].minerai), getEmplacements()[indexBat].niveau);
+      setConstructionParametre(indexBat, getEmplacements()[indexBat].decouvert,
+        getEmplacements()[indexBat].gisement,
+        tPossibilite[choix], False, traiterResource(getEmplacements()[indexBat].minerai),
+        getEmplacements()[indexBat].niveau);
       removeRessources(tPossibilite[choix], getEmplacements()[indexBat].niveau);
       AlertInterfaceGame('Construction Effectué', 'Bravo !', green);
       refreshInterfaceGame();
@@ -538,14 +565,19 @@ begin
       AlertInterfaceGame('Impossible de construire', ' Pas assez de ressources', red);
     end;
   end
-  else if (getEmplacements()[indexBat].typologie = aucune) AND getEmplacements()[indexBat].decouvert AND  getEmplacements()[indexBat].gisement then
+  else if (getEmplacements()[indexBat].typologie = aucune) and
+    getEmplacements()[indexBat].decouvert and getEmplacements()[indexBat].gisement then
   begin
-    if getEmplacements()[indexBat].gisement AND (tPossibilite[choix] = mine) then
+    if getEmplacements()[indexBat].gisement and (tPossibilite[choix] = mine) then
     begin
-      if haveEnoughResources(tPossibilite[choix], getEmplacements()[indexBat].niveau) then
+      if haveEnoughResources(tPossibilite[choix],
+        getEmplacements()[indexBat].niveau) then
       begin
-        setConstructionParametre(indexBat, getEmplacements()[indexBat].decouvert, getEmplacements()[indexBat].gisement,
-          tPossibilite[choix], False, traiterResource(getEmplacements()[indexBat].minerai), getEmplacements()[indexBat].niveau);
+        setConstructionParametre(indexBat, getEmplacements()[indexBat].decouvert,
+          getEmplacements()[indexBat].gisement,
+          tPossibilite[choix], False,
+          traiterResource(getEmplacements()[indexBat].minerai),
+          getEmplacements()[indexBat].niveau);
         removeRessources(tPossibilite[choix], getEmplacements()[indexBat].niveau);
         AlertInterfaceGame('Construction Effectué', 'Bravo !', green);
         refreshInterfaceGame();
@@ -558,57 +590,178 @@ begin
     end
     else
     begin
-      AlertInterfaceGame('Impossible de construire', '  Pas de gisement exploitable', red);
+      AlertInterfaceGame('Impossible de construire',
+        '  Pas de gisement exploitable', red);
       refreshInterfaceGame();
     end;
   end
   else if tPossibilite[choix] = centrale_elec then
   begin
-    setConstructionParametre(indexBat, getEmplacements()[indexBat].decouvert, getEmplacements()[indexBat].gisement,
+    setConstructionParametre(indexBat, getEmplacements()[indexBat].decouvert,
+      getEmplacements()[indexBat].gisement,
       tPossibilite[choix], False, production_elec, getEmplacements()[indexBat].niveau);
     removeRessources(tPossibilite[choix], getEmplacements()[indexBat].niveau);
-    setPlayerResource(production_elec,getEnergieProduite(getEmplacements()[indexBat].niveau));
+    setPlayerResource(production_elec, getEnergieProduite(
+      getEmplacements()[indexBat].niveau));
     AlertInterfaceGame('Construction Effectué', 'Bravo !', green);
     refreshInterfaceGame();
+  end
+  else if tPossibilite[choix] = constructeur then
+  begin
+
+    choix2 := ConstructeurChoice();
+
+    setConstructionParametre(indexBat, getEmplacements()[indexBat].decouvert,
+      getEmplacements()[indexBat].gisement,
+      tPossibilite[choix], False, production_elec, getEmplacements()[indexBat].niveau);
+
   end;
 
 end;
 
-procedure manageGame(val : String);
+
+
+function ConstructeurChoice() : Integer;
+var
+  choix: string;
+  tMessage: array of tLigne;
+  tMessage2: array of tLigne;
+  page : Integer;
+begin
+  page := 1;
+  SetLength(tMessage, 6);
+  SetLength(tMessage2, 6);
+  tMessage[0].pos.x := 6;
+  tMessage[0].pos.y := 28;
+  tMessage[0].texte := 'Que doit produire le constructeur ?';
+
+  tMessage[1].pos.x := 8;
+  tMessage[1].pos.y := 29;
+  tMessage[1].texte := '1/ Lingots de cuivre';
+
+  tMessage[2].pos.x := 8;
+  tMessage[2].pos.y := 30;
+  tMessage[2].texte := '2/ Lingots de fer';
+
+  tMessage[3].pos.x := 8;
+  tMessage[3].pos.y := 31;
+  tMessage[3].texte := '3/ Cables de cuivre';
+
+  tMessage[4].pos.x := 8;
+  tMessage[4].pos.y := 32;
+  tMessage[4].texte := '4/ Plaques de fer ';
+
+  tMessage[5].pos.x := 8;
+  tMessage[5].pos.y := 33;
+  tMessage[5].texte := '5/ Tuyaux en fer ';
+
+  tMessage[6].pos.x := 8;
+  tMessage[6].pos.y := 34;
+  tMessage[6].texte := '6/ Autre ';
+
+  tMessage2[0].pos.x := 6;
+  tMessage2[0].pos.y := 28;
+  tMessage2[0].texte := 'Que doit produire le constructeur ?';
+
+  tMessage2[1].pos.x := 8;
+  tMessage2[1].pos.y := 29;
+  tMessage2[1].texte := '1/ Sacs de Béton';
+
+  tMessage2[2].pos.x := 8;
+  tMessage2[2].pos.y := 30;
+  tMessage2[2].texte := '2/ Acier';
+
+  tMessage2[3].pos.x := 8;
+  tMessage2[3].pos.y := 31;
+  tMessage2[3].texte := '3/ Plaques renforcées';
+
+  tMessage2[4].pos.x := 8;
+  tMessage2[4].pos.y := 32;
+  tMessage2[4].texte := '4/ Poutres industrielles';
+
+  tMessage2[5].pos.x := 8;
+  tMessage2[5].pos.y := 33;
+  tMessage2[5].texte := '5/ Fondations';
+
+  tMessage2[6].pos.x := 8;
+  tMessage2[6].pos.y := 34;
+  tMessage2[6].texte := '6/ Autre ';
+
+
+  choix := MultiSelectionInterfaceGame(tMessage);
+
+  choix := StrToInt(choix);
+
+  if (choix := 6) and (page = 1) then
+    begin
+      choix := MultiSelectionInterfaceGame(tMessage2);
+    end
+  else if (choix := 6) and (page = 2) then
+    begin
+      MultiSelectionInterfaceGame(tMessage);
+    end
+  else
+    begin
+      if page = 2 then
+        begin
+          choix := choix -1; // je enleve un index car je commence a 2
+          choix := choix * 2; // si page 2 je fais fois 2
+          ConstructeurChoice := choix;
+        end;
+      else
+        begin
+          choix := choix -1; // je enleve un index car je commence a 2
+          ConstructeurChoice := choix;
+        end;
+    end;
+end;
+
+procedure manageGame(val: string);
 begin
   case val of
-    '0': begin
-        retourmenuGame(); // Procedure retour menu (avec retour possible a la partie actuelle)
-       end;
-    '1': begin
-         buildBatiment(); 
-       end;
-    '2': begin
-         // action pour 2
-       end;
-    '3': begin
-         // action pour 3
-       end;
-    '4': begin
-         explorerZone();
-         refreshInterfaceGame();
-       end;
-    '5': begin
-         // action pour 5
-       end;
-    '6': begin
-         // action pour 6
-       end;
-    '7': begin
-         // action pour 7
-       end;
-    '8': begin
-         // action pour 8
-       end;
-    '9': begin
-         // action pour 9
-       end;
-  else
+    '0':
+    begin
+      retourmenuGame();
+      // Procedure retour menu (avec retour possible a la partie actuelle)
+    end;
+    '1':
+    begin
+      buildBatiment();
+    end;
+    '2':
+    begin
+      // action pour 2
+    end;
+    '3':
+    begin
+      // action pour 3
+    end;
+    '4':
+    begin
+      explorerZone();
+      refreshInterfaceGame();
+    end;
+    '5':
+    begin
+      // action pour 5
+    end;
+    '6':
+    begin
+      // action pour 6
+    end;
+    '7':
+    begin
+      // action pour 7
+    end;
+    '8':
+    begin
+      // action pour 8
+    end;
+    '9':
+    begin
+      // action pour 9
+    end;
+    else
     begin
       refreshInterfaceGame();
     end;
@@ -751,7 +904,8 @@ begin
 
   choix := StrToInt(choixStr);
 
-  choix := choix - 1; // Je affiche de 1 a 10 du coup l'utilisateur choisira un chiffre entre 1 et 10 sauf que moi la table elle est de 0 a 9.
+  choix := choix - 1;
+  // Je affiche de 1 a 10 du coup l'utilisateur choisira un chiffre entre 1 et 10 sauf que moi la table elle est de 0 a 9.
 
   if (choix >= 0) and (choix <= 9) then
   begin

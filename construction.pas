@@ -12,6 +12,7 @@ type
     CoutConstruction: array of record
       Ressource: resourcesC;
       Quantite: integer;
+      EnergieProduite: integer;
     end;
     EnergieConsommee: integer;
     CoutAmelioration: array of array of record
