@@ -16,6 +16,11 @@ function getMoisLabel(month : Mois) : String;
 // Fonction qui retorune le prochain mois
 function prochainMois(monthActuelle: Mois): Mois;
 
+// Fonction pour avoir la date actuelle formaté
+function getDateActuelle():String;
+
+// Procedure pour initialiser la Date;
+procedure initDate();
 
 uses sysutils;
 
@@ -75,6 +80,49 @@ const
     'Decembre'
   );
 
+  MaxJoursMois : array[Mois] of Integer = (
+    31,
+    28,
+    31,
+    30,
+    31,
+    30,
+    31,
+    31,
+    30,
+    31,
+    30,
+    31
+  );
+
+
+  dateActuelle = record
+    jourSemaine : Jour;
+    jourMois : Integer;
+    mois : Mois;
+    annee : Integer;
+  end;
+
+var 
+  tDate : array of dateActuelle;
+
+// initialise la date
+procedure initDate();
+  begin
+    SetLength(tDate,1);
+
+    tDate[0].jourSemaine := mardi;
+    tDate[0].jourMois := 2;
+    tDate[0].mois := decembre;
+    tDate[0].annee := 2025;
+
+  end;
+
+function getDateActuelle():String;
+  begin
+    getDateActuelle := getJourLabel(tDate[0].jourSemaine) + ' ' + tDate[0].jourMois + ' ' + getMoisLabel(tDate[0].mois) + ' ' + tDate[0].annee; 
+  end;
+
 
 //@param jour Jours le jour volu
 //return String le label du jour
@@ -111,6 +159,8 @@ begin
   else
     prochainMois := Succ(monthActuelle);
 end;
+
+
 
 end.
  

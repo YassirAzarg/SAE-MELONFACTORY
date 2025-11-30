@@ -3,7 +3,7 @@ unit Logique;
 interface
 
 uses SysUtils, GestionEcran, Windows, utils, Construction, ConstructionType,
-  Emplacement, Resources, EcranAccueil;
+  Emplacement, Resources, EcranAccueil,ChangementJour;
 
 procedure renderGame(); // Procedure qui affiche l'interface texte
 procedure quitter(); // Procedure pour quitter du jeu
@@ -119,7 +119,7 @@ begin
   Write('ZONE : Zone de départ');
 
   deplacerCurseurXY(153, 3);
-  Write('Jeudi 24 Avril 2025');
+  Write(getDateActuelle());
 
   couleurTexte(Cyan);
   writeResources(6, 6, 'Marza''Coin', marzacoins, Cyan);
@@ -210,7 +210,7 @@ begin
   Write('ZONE : Zone de départ');
 
   deplacerCurseurXY(153, 3);
-  Write('Jeudi 24 Avril 2025');
+  Write(getDateActuelle());
 
   couleurTexte(Cyan);
   writeResources(6, 6, 'Marza''Coin', marzacoins, Cyan);
@@ -301,7 +301,7 @@ begin
   Write('ZONE : Zone de départ');
 
   deplacerCurseurXY(153, 3);
-  Write('Jeudi 24 Avril 2025');
+  Write(getDateActuelle());
 
   couleurTexte(Cyan);
   writeResources(6, 6, 'Marza''Coin', marzacoins, Cyan);
@@ -362,7 +362,7 @@ begin
   Write('ZONE : Zone de départ');
 
   deplacerCurseurXY(153, 3);
-  Write('Jeudi 24 Avril 2025');
+  Write(getDateActuelle());
 
   couleurTexte(Cyan);
   writeResources(6, 6, 'Marza''Coin', marzacoins, Cyan);
@@ -424,7 +424,7 @@ begin
   Write('ZONE : Zone de départ');
 
   deplacerCurseurXY(153, 3);
-  Write('Jeudi 24 Avril 2025');
+  Write(getDateActuelle());
 
   couleurTexte(Cyan);
   writeResources(6, 6, 'Marza''Coin', marzacoins, Cyan);
@@ -963,6 +963,7 @@ begin
   InitialiserConstructions();
   initResources();
   initInterfaceGame();
+  initDate();
 
 end;
 
