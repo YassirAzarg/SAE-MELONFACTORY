@@ -4,25 +4,9 @@ unit ChangementJour;
 interface
 
 
-// Fonction qui retourne le label du jour
-function getJourLabel(jour : Jours) : String;
 
-// Fonction qui retorune le prochain jour
-function prochainJour(jourActuelle: Jours): Jours;
 
-// Fonction qui retourne le label du Mois
-function getMoisLabel(month : Mois) : String;
-
-// Fonction qui retorune le prochain mois
-function prochainMois(monthActuelle: Mois): Mois;
-
-// Fonction pour avoir la date actuelle formaté
-function getDateActuelle():String;
-
-// Procedure pour initialiser la Date;
-procedure initDate();
-
-uses sysutils;
+uses SysUtils;
 
 type
   Jours = (
@@ -32,8 +16,8 @@ type
     jeudi,
     vendredi,
     samedi,
-    dimanche,
-  );
+    dimanche
+    );
 
   Mois = (
     janvier,
@@ -48,13 +32,32 @@ type
     octobre,
     novembre,
     decembre
-  );
+    );
+
+// Fonction qui retourne le label du jour
+function getJourLabel(jour: Jours): string;
+
+// Fonction qui retorune le prochain jour
+function prochainJour(jourActuelle: Jours): Jours;
+
+// Fonction qui retourne le label du Mois
+function getMoisLabel(month: Mois): string;
+
+// Fonction qui retorune le prochain mois
+function prochainMois(monthActuelle: Mois): Mois;
+
+// Fonction pour avoir la date actuelle formaté
+procedure printDateActuelle();
+
+
+// Procedure pour initialiser la Date;
+procedure initDate();
 
 
 
 implementation
 
-const 
+const
   JoursLabels: array[Jours] of string = (
     'Lundi',
     'Mardi',
@@ -63,7 +66,7 @@ const
     'Vendredi',
     'Samedi',
     'Dimanche'
-  );
+    );
 
   MoisLabels: array[Mois] of string = (
     'Janvier',
@@ -78,9 +81,9 @@ const
     'Octobre',
     'Novembre',
     'Decembre'
-  );
+    );
 
-  MaxJoursMois : array[Mois] of Integer = (
+  MaxJoursMois: array[Mois] of integer = (
     31,
     28,
     31,
@@ -93,43 +96,42 @@ const
     31,
     30,
     31
-  );
+    );
 
-
+type
   dateActuelle = record
-    jourSemaine : Jour;
-    jourMois : Integer;
-    mois : Mois;
-    annee : Integer;
+    jourSemaine: Jours;
+    jourMois: integer;
+    mois: Mois;
+    annee: integer;
   end;
 
-var 
-  tDate : array of dateActuelle;
+var
+  tDate: dateActuelle;
 
 // initialise la date
 procedure initDate();
-  begin
-    SetLength(tDate,1);
+begin
+  tDate.jourSemaine := mardi;
+  tDate.jourMois := 2;
+  tDate.mois := decembre;
+  tDate.annee := 2025;
+end;
 
-    tDate[0].jourSemaine := mardi;
-    tDate[0].jourMois := 2;
-    tDate[0].mois := decembre;
-    tDate[0].annee := 2025;
+procedure printDateActuelle();
+begin
+  
+  Write(getJourLabel(tDate.jourSemaine),' ',tDate.jourMois,' ',getMoisLabel(tDate.mois),' ',tDate.annee);
 
-  end;
-
-function getDateActuelle():String;
-  begin
-    getDateActuelle := getJourLabel(tDate[0].jourSemaine) + ' ' + tDate[0].jourMois + ' ' + getMoisLabel(tDate[0].mois) + ' ' + tDate[0].annee; 
-  end;
+end;
 
 
 //@param jour Jours le jour volu
 //return String le label du jour
-function getJourLabel(jour : Jours) : String;
-  begin
-    getJourLabel := JoursLabels[jour];
-  end;
+function getJourLabel(jour: Jours): string;
+begin
+  getJourLabel := JoursLabels[jour];
+end;
 
 
 //@param jour Jours le jour actuelle
@@ -145,23 +147,22 @@ end;
 
 //@param mois Mois le mois volu
 //return String le label du mois
-function getMoisLabel(month : Mois) : String;
-  begin
-    getMoisLabel := MoisLabels[month];
-  end;
+function getMoisLabel(month: Mois): string;
+begin
+  getMoisLabel := MoisLabels[month];
+end;
 
 //@param mois Mois le mois actuelle
 //return mois le prochain mois
 function prochainMois(monthActuelle: Mois): Mois;
 begin
   if monthActuelle = decembre then
-    monthActuelle := janvier
+    prochainMois := janvier
   else
     prochainMois := Succ(monthActuelle);
 end;
 
 
 
+
 end.
- 
-  

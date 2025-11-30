@@ -119,7 +119,7 @@ begin
   Write('ZONE : Zone de départ');
 
   deplacerCurseurXY(153, 3);
-  Write(getDateActuelle());
+  printDateActuelle();
 
   couleurTexte(Cyan);
   writeResources(6, 6, 'Marza''Coin', marzacoins, Cyan);
@@ -210,7 +210,7 @@ begin
   Write('ZONE : Zone de départ');
 
   deplacerCurseurXY(153, 3);
-  Write(getDateActuelle());
+  printDateActuelle();
 
   couleurTexte(Cyan);
   writeResources(6, 6, 'Marza''Coin', marzacoins, Cyan);
@@ -301,7 +301,7 @@ begin
   Write('ZONE : Zone de départ');
 
   deplacerCurseurXY(153, 3);
-  Write(getDateActuelle());
+  printDateActuelle();
 
   couleurTexte(Cyan);
   writeResources(6, 6, 'Marza''Coin', marzacoins, Cyan);
@@ -362,7 +362,7 @@ begin
   Write('ZONE : Zone de départ');
 
   deplacerCurseurXY(153, 3);
-  Write(getDateActuelle());
+  printDateActuelle();
 
   couleurTexte(Cyan);
   writeResources(6, 6, 'Marza''Coin', marzacoins, Cyan);
@@ -424,7 +424,7 @@ begin
   Write('ZONE : Zone de départ');
 
   deplacerCurseurXY(153, 3);
-  Write(getDateActuelle());
+  printDateActuelle();
 
   couleurTexte(Cyan);
   writeResources(6, 6, 'Marza''Coin', marzacoins, Cyan);
@@ -835,7 +835,7 @@ begin
     '7':
     begin
       // action pour 7
-      changerDeJour();
+      //changerDeJour();
     end;
     '8':
     begin
@@ -960,10 +960,11 @@ begin
 
   SetConsoleOutputCP(850);
 
+  initDate();
   InitialiserConstructions();
   initResources();
   initInterfaceGame();
-  initDate();
+
 
 end;
 
