@@ -567,7 +567,7 @@ begin
     setConstructionParametre(indexBat, getEmplacements()[indexBat].decouvert, getEmplacements()[indexBat].gisement,
       tPossibilite[choix], False, production_elec, getEmplacements()[indexBat].niveau);
     removeRessources(tPossibilite[choix], getEmplacements()[indexBat].niveau);
-    setPlayerResource(production_elec,)
+    setPlayerResource(production_elec,getEnergieProduite(getEmplacements()[indexBat].niveau));
     AlertInterfaceGame('Construction Effectué', 'Bravo !', green);
     refreshInterfaceGame();
   end;

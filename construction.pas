@@ -34,8 +34,16 @@ procedure InitialiserConstructions;
 //return Oui ou Non si il a assez de ressources
 function haveEnoughResources(typologie : TypeConstructions; niveau : Integer): boolean;
 
-
+//Procedure qui sert a enlever les ressource lors de la construction
+//@param typologie TypeConstructions indique le type de construction
+//@param Niveau actuelle
 procedure removeRessources(typologie : TypeConstructions; niveau : Integer);
+
+
+// Function qui me retourne la production actuelle de l'Energie en fonction du niveau
+// @param niveau actuelle
+// return Quantité
+function getEnergieProduite(niveau : Integer): Integer;
 
 
 implementation
@@ -95,7 +103,7 @@ begin
   Constructions[centrale_elec].CoutConstruction[1].Quantite := 10;
   Constructions[centrale_elec].CoutConstruction[2].Ressource := sacs_de_beton;
   Constructions[centrale_elec].CoutConstruction[2].Quantite := 20;
-  
+
   Constructions[centrale_elec].CoutConstruction[0].EnergieProduite := 1200; // Energie produite
   Constructions[centrale_elec].CoutConstruction[1].EnergieProduite := 2400;
   Constructions[centrale_elec].CoutConstruction[2].EnergieProduite := 3600;
@@ -112,6 +120,13 @@ begin
   Constructions[ascenseur_orbitale].CoutConstruction[2].Quantite := 200;
   Constructions[ascenseur_orbitale].EnergieConsommee := 1000;
 end;
+
+function getEnergieProduite(niveau : Integer): Integer;
+  begin
+    
+    getEnergieProduite := Constructions[centrale_elec].CoutConstruction[niveau - 1].EnergieProduite; // Ici je retorune l'energie produite par le system 
+
+  end;
 
 function haveEnoughResources(typologie : TypeConstructions; niveau : Integer): boolean;
 var 
