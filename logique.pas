@@ -514,7 +514,7 @@ begin
   tPossibilite[3] := ascenseur_orbitale;
 
   SetLength(tRessources, 11);
-  
+
   tRessources[1] := cuivre;
   tRessources[2] := fer;
   tRessources[3] := cables_de_cuivre;
@@ -533,19 +533,22 @@ begin
   // Si il est pas decouvert
   if not getEmplacements()[indexBat].decouvert then
   begin
-    AlertInterfaceGame('Impossible de construire ici', ' Emplacement non decouvert', red);
+    AlertInterfaceGame('Impossible de construire ici',
+      ' Emplacement non decouvert', red);
     refreshInterfaceGame();
   end
   // Si typologie = hub alors impossible
   else if getEmplacements()[indexBat].typologie = hub then
   begin
-    AlertInterfaceGame('Impossible de construire ici', TypologieToString(getEmplacements()[indexBat].typologie), red);
+    AlertInterfaceGame('Impossible de construire ici',
+      TypologieToString(getEmplacements()[indexBat].typologie), red);
     refreshInterfaceGame();
   end
   // Si un bâtiment existe déjà (typologie <> aucune), impossible de construire
   else if getEmplacements()[indexBat].typologie <> aucune then
   begin
-    AlertInterfaceGame('Impossible de construire', ' Un bâtiment existe déjà ici', red);
+    AlertInterfaceGame('Impossible de construire',
+      ' Un bâtiment existe déjà ici', red);
     refreshInterfaceGame();
   end
   // Si une mine est demandée mais pas de gisement
@@ -573,18 +576,21 @@ begin
       begin
         setConstructionParametre(indexBat, getEmplacements()[indexBat].decouvert,
           getEmplacements()[indexBat].gisement,
-          tPossibilite[choix], False, production_elec, getEmplacements()[indexBat].niveau);
-        setPlayerResource(production_elec, getPlayerResource(production_elec) + getEnergieProduite(getEmplacements()[indexBat].niveau));
+          tPossibilite[choix], False, production_elec,
+          getEmplacements()[indexBat].niveau);
+        setPlayerResource(production_elec, getPlayerResource(production_elec) +
+          getEnergieProduite(getEmplacements()[indexBat].niveau));
       end
       // Cas pour la mine et autres bâtiments
       else
       begin
         setConstructionParametre(indexBat, getEmplacements()[indexBat].decouvert,
           getEmplacements()[indexBat].gisement,
-          tPossibilite[choix], False, traiterResource(getEmplacements()[indexBat].minerai),
+          tPossibilite[choix], False,
+          traiterResource(getEmplacements()[indexBat].minerai),
           getEmplacements()[indexBat].niveau);
       end;
-      
+
       removeRessources(tPossibilite[choix], getEmplacements()[indexBat].niveau);
       AlertInterfaceGame('Construction Effectué', 'Bravo !', green);
       refreshInterfaceGame();
@@ -666,19 +672,72 @@ begin
       page := 2
     else if (choix = 6) and (page = 2) then
       page := 1
-      
+
 
   until choix <> 6; // boucle tant que l'utilisateur choisit 6
 
   if page = 2 then
-    begin
-      choix := choix * 2; // si page 2 je fais fois 2
-    end;
+  begin
+    choix := choix * 2; // si page 2 je fais fois 2
+  end;
 
 
   ConstructeurChoice := choix;
 end;
 
+
+procedure upgradeBatiment();
+
+var choixStr : String;
+   choix : Integer;
+
+begin
+
+  choixStr := SelectionInterfaceGame('< Selectionnez un emplacement >');
+
+  if choixStr = '' then
+  begin
+    AlertInterfaceGame('Impossible de construire ici', '   Aucune valeur saisie', red);
+    refreshInterfaceGame();
+  end;
+
+  choix := StrToInt(choixStr);
+  
+  choix := choix - 1;
+
+  if (getEmplacements()[choix].typologie <> aucune) then
+    begin
+      if getEmplacements()[choix].niveau < 3  then
+       begin
+          if haveEnoughResources(getEmplacements()[choix].typologie, getEmplacements()[choix].niveau) then
+          begin
+            setConstructionParametre(choix, getEmplacements()[choix].decouvert,
+            getEmplacements()[choix].gisement,
+            getEmplacements()[choix].typologie, False, getEmplacements()[choix].minerai,
+            getEmplacements()[choix].niveau + 1);
+            AlertInterfaceGame('Amélioration réussie', 'Bravo !', green);
+            refreshInterfaceGame;
+          end
+        else
+          begin
+            AlertInterfaceGame('Impossible d''améliorer', ' Pas assez de ressources', red);
+            refreshInterfaceGame;
+          end
+       end
+       else
+        begin
+          AlertInterfaceGame('Impossible d''améliorer', ' Niveau maximum atteint !', red);
+          refreshInterfaceGame;
+        end;
+
+    end
+  else
+    begin
+      AlertInterfaceGame('Impossible d''améliorer', 'Ce n''est pas un bâtiment !', red);
+      refreshInterfaceGame;
+    end;
+
+end;
 
 procedure manageGame(val: string);
 begin
@@ -694,11 +753,11 @@ begin
     end;
     '2':
     begin
-      // action pour 2
+      
     end;
     '3':
     begin
-      // action pour 3
+      upgradeBatiment();
     end;
     '4':
     begin

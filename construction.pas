@@ -57,7 +57,7 @@ begin
   Constructions[mine].CoutConstruction[0].Ressource := plaques_de_fer;
   Constructions[mine].CoutConstruction[0].Quantite := 10;
   Constructions[mine].EnergieConsommee := 100;
-  SetLength(Constructions[mine].CoutAmelioration, 3);
+  SetLength(Constructions[mine].CoutAmelioration, 2);
   SetLength(Constructions[mine].CoutAmelioration[0], 2);
   Constructions[mine].CoutAmelioration[0][0].Ressource := plaques_de_fer;
   Constructions[mine].CoutAmelioration[0][0].Quantite := 20;
@@ -100,15 +100,17 @@ begin
   SetLength(Constructions[centrale_elec].CoutConstruction, 3);
   Constructions[centrale_elec].CoutConstruction[0].Ressource := cables_de_cuivre;
   Constructions[centrale_elec].CoutConstruction[0].Quantite := 30;
+  Constructions[centrale_elec].CoutConstruction[0].EnergieProduite := 1200; // Energie produite niveau 1
+  
   Constructions[centrale_elec].CoutConstruction[1].Ressource := plaques_de_fer;
   Constructions[centrale_elec].CoutConstruction[1].Quantite := 10;
+  Constructions[centrale_elec].CoutConstruction[1].EnergieProduite := 2400; // Energie produite niveau 2
+  
   Constructions[centrale_elec].CoutConstruction[2].Ressource := sacs_de_beton;
   Constructions[centrale_elec].CoutConstruction[2].Quantite := 20;
-
-  Constructions[centrale_elec].CoutConstruction[0].EnergieProduite := 1200; // Energie produite
-  Constructions[centrale_elec].CoutConstruction[1].EnergieProduite := 2400;
-  Constructions[centrale_elec].CoutConstruction[2].EnergieProduite := 3600;
-
+  Constructions[centrale_elec].CoutConstruction[2].EnergieProduite := 3600; // Energie produite niveau 3
+  
+  SetLength(Constructions[centrale_elec].CoutAmelioration, 0);
 
   // Ascenseur orbital
   Constructions[ascenseur_orbitale].Nom := 'Ascenseur orbital';
@@ -120,36 +122,36 @@ begin
   Constructions[ascenseur_orbitale].CoutConstruction[2].Ressource := sacs_de_beton;
   Constructions[ascenseur_orbitale].CoutConstruction[2].Quantite := 200;
   Constructions[ascenseur_orbitale].EnergieConsommee := 1000;
+  SetLength(Constructions[ascenseur_orbitale].CoutAmelioration, 0);
 end;
 
+// Function qui me retourne la production actuelle de l'Energie en fonction du niveau
+// @param niveau actuelle
+// return Quantité
 function getEnergieProduite(niveau : Integer): Integer;
-  begin
-    
-    getEnergieProduite := Constructions[centrale_elec].CoutConstruction[niveau - 1].EnergieProduite; // Ici je retorune l'energie produite par le system 
+begin
+  // Ici je retorune l'energie produite par le system 
+  getEnergieProduite := Constructions[centrale_elec].CoutConstruction[niveau - 1].EnergieProduite;
+end;
 
-  end;
-
+//Function qui sert a savoir si il a assez de ressources pour une construction 
+//@param typologie TypeConstructions indique le type de construction
+//@param Niveau actuelle
+//return Oui ou Non si il a assez de ressources
 function haveEnoughResources(typologie : TypeConstructions; niveau : Integer): boolean;
 var 
   i, verification, good : Integer;
 begin
-  // si niveau = 1 alors on vérifie le coût de construction
-  if niveau = 1 then
-    verification := High(Constructions[typologie].CoutConstruction)
-  else
-    // sinon on vérifie le coût d'amélioration correspondant
-    verification := High(Constructions[typologie].CoutAmelioration[niveau + 1]);
-
   good := 0;
 
-  deplacerCurseurXY(8,35);
-  Write(verification);
-
+  // Niveau 1 = CoutConstruction
   if niveau = 1 then
   begin
+    verification := High(Constructions[typologie].CoutConstruction);
+    
+    // je verifie que il a les ressources necessaires
     for i := Low(Constructions[typologie].CoutConstruction) to High(Constructions[typologie].CoutConstruction) do
     begin
-      // je verifie que il a les ressources necessaires
       if getPlayerResource(Constructions[typologie].CoutConstruction[i].Ressource) >= 
          Constructions[typologie].CoutConstruction[i].Quantite then
       begin
@@ -157,17 +159,18 @@ begin
       end;
     end;
   end
+  // Niveau 2 ou 3 = CoutAmelioration[0] ou [1]
   else
   begin
-    for i := Low(Constructions[typologie].CoutAmelioration[niveau - 1]) to High(Constructions[typologie].CoutAmelioration[niveau - 1]) do
+    verification := High(Constructions[typologie].CoutAmelioration[niveau - 2]);
+    
+    // je verifie que il a les ressources necessaires
+    for i := Low(Constructions[typologie].CoutAmelioration[niveau - 2]) to High(Constructions[typologie].CoutAmelioration[niveau - 2]) do
     begin
-      // je verifie que il a les ressources necessaires
-      if getPlayerResource(Constructions[typologie].CoutAmelioration[niveau - 1][i].Ressource) >= 
-         Constructions[typologie].CoutAmelioration[niveau - 1][i].Quantite then
+      if getPlayerResource(Constructions[typologie].CoutAmelioration[niveau - 2][i].Ressource) >= 
+         Constructions[typologie].CoutAmelioration[niveau - 2][i].Quantite then
       begin
-        good := good + 1; 
-        //deplacerCurseurXY(8,36);
-        //Write(good);
+        good := good + 1;
       end;
     end;
   end;
@@ -176,36 +179,31 @@ begin
   haveEnoughResources := (verification + 1 = good);
 end;
 
-// procedure pour enlever les ressources
+//Procedure qui sert a enlever les ressource lors de la construction
+//@param typologie TypeConstructions indique le type de construction
+//@param Niveau actuelle
 procedure removeRessources(typologie : TypeConstructions; niveau : Integer);
-  var 
-   r,i : Integer;
+var 
+  i : Integer;
+begin
+  // Niveau 1 = CoutConstruction
+  if niveau = 1 then
   begin
-   if niveau = 1 then
+    for i := Low(Constructions[typologie].CoutConstruction) to High(Constructions[typologie].CoutConstruction) do
     begin
-      r := High(Constructions[typologie].CoutConstruction);
-    end
-   else
-    begin
-      r := High(Constructions[typologie].CoutAmelioration)
+      removePlayerResource(Constructions[typologie].CoutConstruction[i].Ressource, 
+                          Constructions[typologie].CoutConstruction[i].Quantite);
     end;
-    
-    if niveau = 1 then
-      begin
-        for i:= Low(Constructions[typologie].CoutConstruction) to High(Constructions[typologie].CoutConstruction) do
-          begin
-            removePlayerResource(Constructions[typologie].CoutConstruction[i].Ressource,Constructions[typologie].CoutConstruction[i].Quantite);
-          end
-      end
-      else 
-        begin
-          for i := Low(Constructions[typologie].CoutAmelioration[niveau - 1]) to Low(Constructions[typologie].CoutAmelioration[niveau - 1]) do
-            begin
-              removePlayerResource(Constructions[typologie].CoutAmelioration[niveau - 1][i].Ressource,Constructions[typologie].CoutAmelioration[niveau - 1][i].Quantite);
-            end
-        end;
-
+  end
+  // Niveau 2 ou 3 = CoutAmelioration[0] ou [1]
+  else
+  begin
+    for i := Low(Constructions[typologie].CoutAmelioration[niveau - 2]) to High(Constructions[typologie].CoutAmelioration[niveau - 2]) do
+    begin
+      removePlayerResource(Constructions[typologie].CoutAmelioration[niveau - 2][i].Ressource, 
+                          Constructions[typologie].CoutAmelioration[niveau - 2][i].Quantite);
+    end;
   end;
-
+end;
 
 end.
