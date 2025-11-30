@@ -9,6 +9,9 @@ procedure renderGame(); // Procedure qui affiche l'interface texte
 procedure quitter(); // Procedure pour quitter du jeu
 procedure initInterfaceGame(); // Procedure qui initialise l'Interface principale
 procedure buildBatiment(); // Procedure qui gére l'option construire un batiment
+procedure afficherWiki(); // Procédure qui gere le wiki
+procedure afficherListeProductions(); // Procédure qui affiche les infos de production
+procedure afficherListeBatiments(); // Procédure qui affiche tous les batiments
 
 // procedure pour facilement écrire les resources
 procedure writeResources(x, y: integer; str: string; resource: resourcesC;
@@ -913,7 +916,7 @@ begin
     end;
     '7':
     begin
-      // action pour 7
+     
       changerDeJour();
       refreshInterfaceGame();
     end;
@@ -924,7 +927,7 @@ begin
     end;
     '9':
     begin
-      // action pour 9
+     afficherWiki();
     end;
     else
     begin
@@ -1361,5 +1364,329 @@ begin
   refreshInterfaceGame();
 end;
 
+
+procedure afficherListeBatiments();
+var
+  choix: string;
+begin
+  effacerEcran();
+  couleurTexte(white);
+
+  dessinerCadreXY(1, 1, 50, 40, simple, white, black);
+  dessinerCadreXY(50, 1, 201, 40, simple, white, black);
+
+  SetConsoleOutputCP(850);
+  SetConsoleOutputCP(CP_UTF8);
+
+  deplacerCurseurXY(5, 27);
+  Write('Que veux-tu faire ?');
+
+  deplacerCurseurXY(6, 28);
+  Write('     1/ Voir la liste des bâtiments');
+  deplacerCurseurXY(6, 29);
+  Write('     2/ Voir la liste des productions');
+  deplacerCurseurXY(6, 30);
+  Write('     3/ Quitter le wiki');
+
+  SetConsoleOutputCP(850);
+
+  dessinerCadreXY(40, 36, 48, 38, simple, white, black);
+
+  SetConsoleOutputCP(CP_UTF8);
+
+  // tous les bat dans la partie droite
+  couleurTexte(white);
+
+  // mine mk
+  deplacerCurseurXY(55, 6);
+  couleurTexte(Yellow);
+  Write('Mine Mk.');
+  couleurTexte(white);
+  deplacerCurseurXY(55, 7);
+  Write('   - Coût de construction : Plaques de fer (x10)');
+  deplacerCurseurXY(55, 8);
+  Write('   - Energie consommée : 100');
+  deplacerCurseurXY(55, 9);
+  Write('   - Coût d''amélioration niv 2 : Plaques de fer (x20) / Sacs de Béton (x20)');
+  deplacerCurseurXY(55, 10);
+  Write('   - Coût d''amélioration niv 3 : Plaques de fer (x20) / Acier (x20)');
+
+  // Constructeur
+  deplacerCurseurXY(55, 12);
+  couleurTexte(Yellow);
+  Write('Constructeur');
+  couleurTexte(white);
+  deplacerCurseurXY(55, 13);
+  Write('   - Coût de construction : Cables de cuivre (x10) / Plaques de fer (x10)');
+  deplacerCurseurXY(55, 14);
+  Write('   - Energie consommée : 200');
+  deplacerCurseurXY(55, 15);
+  Write('   - Coût d''amélioration niv 2 : Plaques de fer (x20) / Sacs de Béton (x20)');
+  deplacerCurseurXY(55, 16);
+  Write('   - Coût d''amélioration niv 3 : Plaques de fer (x20) / Acier (x20)');
+
+  // HUB
+  deplacerCurseurXY(55, 18);
+  couleurTexte(Yellow);
+  Write('HUB');
+  couleurTexte(white);
+  deplacerCurseurXY(55, 19);
+  Write('   - Energie consommée : 100');
+
+  // Centrale électrique
+  deplacerCurseurXY(55, 21);
+  couleurTexte(Yellow);
+  Write('Centrale électrique');
+  couleurTexte(white);
+  deplacerCurseurXY(55, 22);
+  Write('   - Coût de construction : Cables de cuivre (x30) / Plaques de fer (x10) / Sacs de Béton (x20)');
+  deplacerCurseurXY(55, 23);
+  Write('   - Energie produite : 1200');
+
+  deplacerCurseurXY(55, 25);
+  couleurTexte(Yellow);
+  Write('Ascenseur orbital');
+  couleurTexte(white);
+  deplacerCurseurXY(55, 26);
+  Write('   - Coût de construction : Cables de cuivre (x200) / Plaques de fer (x200) / Sacs de Béton (x200)');
+  deplacerCurseurXY(55, 27);
+  Write('   - Energie consommée : 1000');
+
+  SetConsoleOutputCP(850);
+
+  deplacerCurseurXY(42, 37);
+  ReadLn(choix);
+
+  // Navigation
+  case choix of
+    '1':
+    begin
+      afficherListeBatiments();
+    end;
+    '2':
+    begin
+      afficherListeProductions();
+    end;
+    '3':
+    begin
+      refreshInterfaceGame();
+    end;
+  else
+    begin
+      afficherListeBatiments();
+    end;
+  end;
+end;
+
+
+procedure afficherListeProductions();
+var
+  choix: string;
+begin
+  effacerEcran();
+  couleurTexte(white);
+
+  dessinerCadreXY(1, 1, 50, 40, simple, white, black);
+  dessinerCadreXY(50, 1, 201, 40, simple, white, black);
+
+  SetConsoleOutputCP(850);
+  SetConsoleOutputCP(CP_UTF8);
+
+  deplacerCurseurXY(5, 27);
+  Write('Que veux-tu faire ?');
+
+  deplacerCurseurXY(6, 28);
+  Write('     1/ Voir la liste des bâtiments');
+  deplacerCurseurXY(6, 29);
+  Write('     2/ Voir la liste des productions');
+  deplacerCurseurXY(6, 30);
+  Write('     3/ Quitter le wiki');
+
+  SetConsoleOutputCP(850);
+
+  dessinerCadreXY(40, 36, 48, 38, simple, white, black);
+
+  SetConsoleOutputCP(CP_UTF8);
+
+  couleurTexte(white);
+
+  // Lingots de cuivre
+  deplacerCurseurXY(55, 5);
+  couleurTexte(Cyan);
+  Write('Lingots de cuivre');
+  couleurTexte(white);
+  deplacerCurseurXY(55, 6);
+  Write('   - Quantité produite par lot : 15');
+  deplacerCurseurXY(55, 7);
+  Write('   - Ressources nécessaires : Minerai de cuivre (x30)');
+
+  // Plaques renforcées
+  deplacerCurseurXY(120, 5);
+  couleurTexte(Cyan);
+  Write('Plaques renforcées');
+  couleurTexte(white);
+  deplacerCurseurXY(120, 6);
+  Write('   - Quantité produite par lot : 2');
+  deplacerCurseurXY(120, 7);
+  Write('   - Ressources nécessaires : Plaques de fer (x20) / Acier (x20)');
+
+  // Lingots de fer
+  deplacerCurseurXY(55, 10);
+  couleurTexte(Cyan);
+  Write('Lingots de fer');
+  couleurTexte(white);
+  deplacerCurseurXY(55, 11);
+  Write('   - Quantité produite par lot : 15');
+  deplacerCurseurXY(55, 12);
+  Write('   - Ressources nécessaires : Minerai de fer (x30)');
+
+  // Poutres industrielles
+  deplacerCurseurXY(120, 10);
+  couleurTexte(Cyan);
+  Write('Poutres industrielles');
+  couleurTexte(white);
+  deplacerCurseurXY(120, 11);
+  Write('   - Quantité produite par lot : 2');
+  deplacerCurseurXY(120, 12);
+  Write('   - Ressources nécessaires : Plaques de fer (x20) / Sacs de Béton (x15)');
+
+  // Cables de cuivre
+  deplacerCurseurXY(55, 15);
+  couleurTexte(Cyan);
+  Write('Cables de cuivre');
+  couleurTexte(white);
+  deplacerCurseurXY(55, 16);
+  Write('   - Quantité produite par lot : 5');
+  deplacerCurseurXY(55, 17);
+  Write('   - Ressources nécessaires : Lingots de cuivre (x15)');
+
+  // Fondations
+  deplacerCurseurXY(120, 15);
+  couleurTexte(Cyan);
+  Write('Fondations');
+  couleurTexte(white);
+  deplacerCurseurXY(120, 16);
+  Write('   - Quantité produite par lot : 2');
+  deplacerCurseurXY(120, 17);
+  Write('   - Ressources nécessaires : Sacs de Béton (x30)');
+
+  // Plaques de fer
+  deplacerCurseurXY(55, 20);
+  couleurTexte(Cyan);
+  Write('Plaques de fer');
+  couleurTexte(white);
+  deplacerCurseurXY(55, 21);
+  Write('   - Quantité produite par lot : 10');
+  deplacerCurseurXY(55, 22);
+  Write('   - Ressources nécessaires : Lingots de fer (x60)');
+
+  // Tuyaux en fer
+  deplacerCurseurXY(55, 25);
+  couleurTexte(Cyan);
+  Write('Tuyaux en fer');
+  couleurTexte(white);
+  deplacerCurseurXY(55, 26);
+  Write('   - Quantité produite par lot : 10');
+  deplacerCurseurXY(55, 27);
+  Write('   - Ressources nécessaires : Lingots de fer (x30)');
+
+  // Sacs de Béton
+  deplacerCurseurXY(55, 30);
+  couleurTexte(Cyan);
+  Write('Sacs de Béton');
+  couleurTexte(white);
+  deplacerCurseurXY(55, 31);
+  Write('   - Quantité produite par lot : 5');
+  deplacerCurseurXY(55, 32);
+  Write('   - Ressources nécessaires : Calcaire (x15)');
+
+  // Acier
+  deplacerCurseurXY(55, 35);
+  couleurTexte(Cyan);
+  Write('Acier');
+  couleurTexte(white);
+  deplacerCurseurXY(55, 36);
+  Write('   - Quantité produite par lot : 15');
+  deplacerCurseurXY(55, 37);
+  Write('   - Ressources nécessaires : Minerai de fer (x30) / Charbon (x15)');
+
+  SetConsoleOutputCP(850);
+
+  deplacerCurseurXY(42, 37);
+  ReadLn(choix);
+
+  case choix of
+    '1':
+    begin
+      afficherListeBatiments();
+    end;
+    '2':
+    begin
+      afficherListeProductions();
+    end;
+    '3':
+    begin
+      refreshInterfaceGame();
+    end;
+  else
+    begin
+      afficherListeProductions();
+    end;
+  end;
+end;
+
+
+procedure afficherWiki();
+var
+  choix: string;
+begin
+  effacerEcran();
+  couleurTexte(white);
+
+  dessinerCadreXY(1, 1, 50, 40, simple, white, black);
+  dessinerCadreXY(50, 1, 201, 40, simple, white, black);
+
+  SetConsoleOutputCP(850);
+  SetConsoleOutputCP(CP_UTF8);
+
+  // titre du cadre
+  deplacerCurseurXY(5, 27);
+  Write('Que veux-tu faire ?');
+
+  // options du menu
+  deplacerCurseurXY(6, 28);
+  Write('     1/ Voir la liste des bâtiments');
+  deplacerCurseurXY(6, 29);
+  Write('     2/ Voir la liste des productions');
+  deplacerCurseurXY(6, 30);
+  Write('     3/ Quitter le wiki');
+
+  SetConsoleOutputCP(850);
+
+  dessinerCadreXY(40, 36, 48, 38, simple, white, black);
+
+  deplacerCurseurXY(42, 37);
+  ReadLn(choix);
+
+  // Traiter le choix
+  case choix of
+    '1':
+    begin
+      afficherListeBatiments();
+    end;
+    '2':
+    begin
+      afficherListeProductions();
+    end;
+    '3':
+    begin
+      refreshInterfaceGame();
+    end;
+  else
+    begin
+      refreshInterfaceGame();
+    end;
+  end;
+end;
 
 end.
