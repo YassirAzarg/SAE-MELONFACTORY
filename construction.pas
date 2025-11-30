@@ -95,7 +95,11 @@ begin
   Constructions[centrale_elec].CoutConstruction[1].Quantite := 10;
   Constructions[centrale_elec].CoutConstruction[2].Ressource := sacs_de_beton;
   Constructions[centrale_elec].CoutConstruction[2].Quantite := 20;
-  Constructions[centrale_elec].EnergieConsommee := 1200; // produit 1200 d’énergie
+  
+  Constructions[centrale_elec].CoutConstruction[0].EnergieProduite := 1200; // Energie produite
+  Constructions[centrale_elec].CoutConstruction[1].EnergieProduite := 2400;
+  Constructions[centrale_elec].CoutConstruction[2].EnergieProduite := 3600;
+
 
   // Ascenseur orbital
   Constructions[ascenseur_orbitale].Nom := 'Ascenseur orbital';

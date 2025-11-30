@@ -76,7 +76,7 @@ const
 
   ResourceLabels: array[resourcesC] of string = (
     'Marzacoins',
-    'Production électrique',
+    'Electricité',
     'Consommation électrique',
     'Fer',
     'Cuivre',

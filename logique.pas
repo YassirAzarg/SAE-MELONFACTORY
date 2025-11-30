@@ -471,106 +471,108 @@ end;
 
 //@param indexBat entier qui indique l'Emplacement
 procedure SelectionBatiment(indexBat : Integer);
- var
+var
   choixStr: string;
   choix: integer;
   tMessage : array of tLigne;
   tPossibilite : array of TypeConstructions;
+begin
+
+  SetLength(tMessage, 5);
+  tMessage[0].pos.x := 6;
+  tMessage[0].pos.y := 28;
+  tMessage[0].texte := 'Quel bâtiment voulez vous construire ?';
+
+  tMessage[1].pos.x := 8;
+  tMessage[1].pos.y := 29;
+  tMessage[1].texte := '1/ Construire une mine';
+
+  tMessage[2].pos.x := 8;
+  tMessage[2].pos.y := 30;
+  tMessage[2].texte := '2/ Construire un constructeur';
+
+  tMessage[3].pos.x := 8;
+  tMessage[3].pos.y := 31;
+  tMessage[3].texte := '3/ Construire une centrale';
+
+  tMessage[4].pos.x := 8;
+  tMessage[4].pos.y := 32;
+  tMessage[4].texte := '4/ Construire l''ascenseur orbital ';
+
+  SetLength(tPossibilite, 5);
+  tPossibilite[0] := mine;
+  tPossibilite[1] := constructeur;
+  tPossibilite[2] := centrale_elec;
+  tPossibilite[3] := ascenseur_orbitale;
+
+  choixStr := MultiSelectionInterfaceGame(tMessage);
+  choix := StrToInt(choixStr) - 1;
+
+  if not getEmplacements()[indexBat].decouvert then
   begin
-    
-    SetLength(tMessage, 5);
-    tMessage[0].pos.x := 6;
-    tMessage[0].pos.y := 28;
-    tMessage[0].texte := 'Quel bâtiment voulez vous construire ?';
-
-    tMessage[1].pos.x := 8;
-    tMessage[1].pos.y := 29;
-    tMessage[1].texte := '1/ Construire une mine';
-
-    tMessage[2].pos.x := 8;
-    tMessage[2].pos.y := 30;
-    tMessage[2].texte := '2/ Construire un constructeur';
-
-    tMessage[3].pos.x := 8;
-    tMessage[3].pos.y := 31;
-    tMessage[3].texte := '3/ Construire une centrale';
-
-    tMessage[4].pos.x := 8;
-    tMessage[4].pos.y := 32;
-    tMessage[4].texte := '4/ Construire l''ascenseur orbital ';
-
-    SetLength(tPossibilite, 5);
-    tPossibilite[0] := mine;
-    tPossibilite[1] := constructeur;
-    tPossibilite[2] := centrale_elec;
-    tPossibilite[3] := ascenseur_orbitale;
-
-    choixStr := MultiSelectionInterfaceGame(tMessage);
-
-
-    choix := StrToInt(choixStr);
-
-    choix := choix - 1;
-
-
-
-    if not getEmplacements()[indexBat].decouvert then
+    AlertInterfaceGame('Impossible de construire ici', ' Emplacement non decouvert', red); 
+    refreshInterfaceGame();
+  end
+  else if getEmplacements()[indexBat].niveau = 3 then
+  begin
+    AlertInterfaceGame('Impossible de construire', ' Niveau maximum atteint', red);
+    refreshInterfaceGame();
+  end 
+  else if getEmplacements()[indexBat].typologie = hub then
+  begin
+    AlertInterfaceGame('Impossible de construire ici', TypologieToString(getEmplacements()[indexBat].typologie), red); 
+    refreshInterfaceGame();
+  end
+  else if (getEmplacements()[indexBat].typologie <> aucune) OR (getEmplacements()[indexBat].gisement AND getEmplacements()[indexBat].decouvert) then
+  begin
+    if haveEnoughResources(tPossibilite[choix], getEmplacements()[indexBat].niveau) then
+    begin
+      setConstructionParametre(indexBat, getEmplacements()[indexBat].decouvert, getEmplacements()[indexBat].gisement,
+        tPossibilite[choix], False, traiterResource(getEmplacements()[indexBat].minerai), getEmplacements()[indexBat].niveau);
+      removeRessources(tPossibilite[choix], getEmplacements()[indexBat].niveau);
+      AlertInterfaceGame('Construction Effectué', 'Bravo !', green);
+      refreshInterfaceGame();
+    end
+    else
+    begin
+      AlertInterfaceGame('Impossible de construire', ' Pas assez de ressources', red);
+    end;
+  end
+  else if (getEmplacements()[indexBat].typologie = aucune) AND getEmplacements()[indexBat].decouvert AND  getEmplacements()[indexBat].gisement then
+  begin
+    if getEmplacements()[indexBat].gisement AND (tPossibilite[choix] = mine) then
+    begin
+      if haveEnoughResources(tPossibilite[choix], getEmplacements()[indexBat].niveau) then
       begin
-        AlertInterfaceGame('Impossible de construire ici' , ' Emplacement non decouvert' , red); 
+        setConstructionParametre(indexBat, getEmplacements()[indexBat].decouvert, getEmplacements()[indexBat].gisement,
+          tPossibilite[choix], False, traiterResource(getEmplacements()[indexBat].minerai), getEmplacements()[indexBat].niveau);
+        removeRessources(tPossibilite[choix], getEmplacements()[indexBat].niveau);
+        AlertInterfaceGame('Construction Effectué', 'Bravo !', green);
         refreshInterfaceGame();
       end
-    else if getEmplacements()[indexBat].niveau = 3 then
+      else
       begin
-        AlertInterfaceGame('Impossible de construire', ' Niveau maximum atteint',red);
+        AlertInterfaceGame('Impossible de construire', 'Pas assez de ressources', red);
         refreshInterfaceGame();
-      end 
-    else if getEmplacements()[indexBat].typologie = hub then
-      begin
-        AlertInterfaceGame('Impossible de construire ici' , TypologieToString(getEmplacements()[indexBat].typologie) , red); 
-        refreshInterfaceGame();
-      end
-    else if (getEmplacements()[indexBat].typologie <> aucune) OR (getEmplacements()[indexBat].gisement AND getEmplacements()[indexBat].decouvert) then
-      begin
-        if haveEnoughResources(tPossibilite[choix],getEmplacements()[indexBat].niveau) then
-          begin
-
-            setConstructionParametre(indexBat, getEmplacements()[indexBat].decouvert , getEmplacements()[indexBat].gisement , tPossibilite[choix] , 
-             False , traiterResource(getEmplacements()[indexBat].minerai) , getEmplacements()[indexBat].niveau );
-
-            removeRessources(tPossibilite[choix], getEmplacements()[indexBat].niveau);
-
-            AlertInterfaceGame('Construction Effectué', 'Bravo !', green);
-
-            refreshInterfaceGame;
-
-          end
-        else
-          begin
-            AlertInterfaceGame('Impossible de construire' , ' Pas assez de ressources' , red);
-          end
       end;
-    else if (getEmplacements()[indexBat].typologie = aucune) AND getEmplacements()[indexBat].gisement AND getEmplacements()[indexBat].decouvert then
-      begin
-        if haveEnoughResources(tPossibilite[choix],getEmplacements()[indexBat].niveau) then
-          begin
-              setConstructionParametre(indexBat, getEmplacements()[indexBat].decouvert , getEmplacements()[indexBat].gisement , tPossibilite[choix] , 
-             False , traiterResource(getEmplacements()[indexBat].minerai) , getEmplacements()[indexBat].niveau );
-
-             removeRessources(tPossibilite[choix], getEmplacements()[indexBat].niveau);
-
-             AlertInterfaceGame('Construction Effectué', 'Bravo !', green);
-
-             refreshInterfaceGame;
-
-
-          end;
-                else
-        begin
-          AlertInterfaceGame('Impossible de construire' , ' Pas assez de ressources' , red);
-        end
-      end;
-
+    end
+    else
+    begin
+      AlertInterfaceGame('Impossible de construire', '  Pas de gisement exploitable', red);
+      refreshInterfaceGame();
+    end;
+  end
+  else if tPossibilite[choix] = centrale_elec then
+  begin
+    setConstructionParametre(indexBat, getEmplacements()[indexBat].decouvert, getEmplacements()[indexBat].gisement,
+      tPossibilite[choix], False, production_elec, getEmplacements()[indexBat].niveau);
+    removeRessources(tPossibilite[choix], getEmplacements()[indexBat].niveau);
+    setPlayerResource(production_elec,)
+    AlertInterfaceGame('Construction Effectué', 'Bravo !', green);
+    refreshInterfaceGame();
   end;
+
+end;
 
 procedure manageGame(val : String);
 begin

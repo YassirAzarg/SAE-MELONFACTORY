@@ -2,7 +2,7 @@ unit Emplacement;
 
 interface
 
-uses SysUtils, GestionEcran, Resources, utils, ConstructionType;
+uses SysUtils, GestionEcran, Resources, utils, ConstructionType, windows;
 
 type
   EmplacementC = record
@@ -220,7 +220,8 @@ begin
       deplacerCurseurXY(posEmplacement[i].x + 4, posEmplacement[i].y + 2);
       Write('BATIMENT : HUB');
     end
-    else if tEmplacement[i].gisement and (tEmplacement[i].minerai <> aucun) and tEmplacement[i].actif then
+    else if tEmplacement[i].gisement and (tEmplacement[i].minerai <> aucun) and
+      tEmplacement[i].actif then
     begin
       dessinerCadreXY(posEmplacement[i].x, posEmplacement[i].y,
         posEmplacement[i].x2, posEmplacement[i].y2, simple, 6, black);
@@ -244,12 +245,30 @@ begin
       dessinerCadreXY(posEmplacement[i].x, posEmplacement[i].y,
         posEmplacement[i].x2, posEmplacement[i].y2, simple, white, black);
       deplacerCurseurXY(posEmplacement[i].x + 4, posEmplacement[i].y + 2);
+      SetConsoleOutputCP(CP_UTF8);
+      Write('BATIMENT   : ', getLabelConstruction(tEmplacement[i].typologie));
+      deplacerCurseurXY(posEmplacement[i].x + 38, posEmplacement[i].y + 2);
+      Write('NIVEAU : ', tEmplacement[i].niveau);
+      deplacerCurseurXY(posEmplacement[i].x + 4, posEmplacement[i].y + 4);
+      Write('PRODUCTION   : ', tEmplacement[i].niveau);
+      SetConsoleOutputCP(850);
+    end
+
+    else if (tEmplacement[i].typologie <> aucune) and
+      (tEmplacement[i].typologie <> mine) then
+    begin
+      dessinerCadreXY(posEmplacement[i].x, posEmplacement[i].y,
+        posEmplacement[i].x2, posEmplacement[i].y2, simple, white, black);
+      deplacerCurseurXY(posEmplacement[i].x + 4, posEmplacement[i].y + 2);
+      SetConsoleOutputCP(CP_UTF8);
       Write('BATIMENT   : ', getLabelConstruction(tEmplacement[i].typologie));
       deplacerCurseurXY(posEmplacement[i].x + 38, posEmplacement[i].y + 2);
       Write('NIVEAU : ', tEmplacement[i].niveau);
       deplacerCurseurXY(posEmplacement[i].x + 4, posEmplacement[i].y + 4);
       Write('PRODUCTION   : ', getResourceLabel(tEmplacement[i].minerai));
+      SetConsoleOutputCP(850);
     end
+
     else
     begin
       dessinerCadreXY(posEmplacement[i].x, posEmplacement[i].y,
