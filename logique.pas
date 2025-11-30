@@ -688,8 +688,9 @@ end;
 
 procedure upgradeBatiment();
 
-var choixStr : String;
-   choix : Integer;
+var
+  choixStr: string;
+  choix: integer;
 
 begin
 
@@ -702,38 +703,95 @@ begin
   end;
 
   choix := StrToInt(choixStr);
-  
+
   choix := choix - 1;
 
   if (getEmplacements()[choix].typologie <> aucune) then
+  begin
+    if getEmplacements()[choix].niveau < 3 then
     begin
-      if getEmplacements()[choix].niveau < 3  then
-       begin
-          if haveEnoughResources(getEmplacements()[choix].typologie, getEmplacements()[choix].niveau) then
-          begin
-            setConstructionParametre(choix, getEmplacements()[choix].decouvert, getEmplacements()[choix].gisement, getEmplacements()[choix].typologie, False, getEmplacements()[choix].minerai,getEmplacements()[choix].niveau + 1);
-            AlertInterfaceGame('Amélioration réussie', 'Bravo !', green);
-            refreshInterfaceGame;
-          end
-        else
-          begin
-            AlertInterfaceGame('Impossible d''améliorer', ' Pas assez de ressources', red);
-            refreshInterfaceGame;
-          end
-       end
-       else
-        begin
-          AlertInterfaceGame('Impossible d''améliorer', ' Niveau maximum atteint !', red);
-          refreshInterfaceGame;
-        end;
-
+      if haveEnoughResources(getEmplacements()[choix].typologie,
+        getEmplacements()[choix].niveau) then
+      begin
+        setConstructionParametre(choix, getEmplacements()[choix].decouvert,
+          getEmplacements()[choix].gisement, getEmplacements()[choix].typologie,
+          False, getEmplacements()[choix].minerai, getEmplacements()[choix].niveau + 1);
+        AlertInterfaceGame('Amélioration réussie', 'Bravo !', green);
+        refreshInterfaceGame;
+      end
+      else
+      begin
+        AlertInterfaceGame('Impossible d''améliorer',
+          ' Pas assez de ressources', red);
+        refreshInterfaceGame;
+      end;
     end
-  else
+    else
     begin
-      AlertInterfaceGame('Impossible d''améliorer', 'Ce n''est pas un bâtiment !', red);
+      AlertInterfaceGame('Impossible d''améliorer',
+        ' Niveau maximum atteint !', red);
       refreshInterfaceGame;
     end;
 
+  end
+  else
+  begin
+    AlertInterfaceGame('Impossible d''améliorer',
+      'Ce n''est pas un bâtiment !', red);
+    refreshInterfaceGame;
+  end;
+
+end;
+
+procedure changerDeResource();
+var
+  choixStr: string;
+  choix: integer;
+  choix2: integer;
+  tRessources : array of resourcesC;
+
+begin
+
+  SetLength(tRessources, 11);
+
+  tRessources[1] := cuivre;
+  tRessources[2] := fer;
+  tRessources[3] := cables_de_cuivre;
+  tRessources[4] := plaques_de_fer;
+  tRessources[5] := tuyaux_en_fer;
+  tRessources[6] := sacs_de_beton;
+  tRessources[7] := acier;
+  tRessources[8] := plaques_renforcees;
+  tRessources[9] := poutres_industrielles;
+  tRessources[10] := fondations;
+
+  choixStr := SelectionInterfaceGame('< Selectionnez un emplacement >');
+
+  if choixStr = '' then
+  begin
+    AlertInterfaceGame('Impossible de effectuer l''action', '   Aucune valeur saisie', red);
+    refreshInterfaceGame();
+  end;
+
+  choix := StrToInt(choixStr);
+
+  choix := choix - 1;
+
+  if getEmplacements()[choix].typologie = constructeur then
+    begin
+
+      choix2 := ConstructeurChoice();
+
+      setConstructionParametre(choix, getEmplacements()[choix].decouvert, getEmplacements()[choix].gisement, constructeur, False, tRessources[choix2], getEmplacements()[choix].niveau);
+      AlertInterfaceGame('Changement effectuer !', 'Nice !', green);
+      refreshInterfaceGame;
+    end
+  else
+    begin
+      AlertInterfaceGame('Impossible de effectuer l''action', 'Ce n''est pas un constructeur ! ', red);
+      refreshInterfaceGame;
+    end;
+      
 end;
 
 procedure manageGame(val: string);
@@ -750,7 +808,7 @@ begin
     end;
     '2':
     begin
-      
+      changerDeResource();
     end;
     '3':
     begin
