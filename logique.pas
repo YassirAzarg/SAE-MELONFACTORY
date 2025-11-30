@@ -38,7 +38,7 @@ procedure SelectionBatiment(indexBat: integer);
 function TypologieToString(t: TypeConstructions): string;
 
 // Fonction qui permet de faire le choix au niveau du type de Constructeur
-function ConstructeurChoice() : Integer;
+function ConstructeurChoice(): integer;
 
 implementation
 
@@ -513,49 +513,78 @@ begin
   tPossibilite[2] := centrale_elec;
   tPossibilite[3] := ascenseur_orbitale;
 
-  SetLength(tRessources, 10);
-
-  tRessources[0] := cuivre;
-  tRessources[1] := fer;
-  tRessources[2] := cables_de_cuivre;
-  tRessources[3] := plaques_de_fer;
-  tRessources[4] := tuyaux_en_fer;
-  tRessources[5] := sacs_de_beton;
-  tRessources[6] := acier;
-  tRessources[7] := plaques_renforcees;
-  tRessources[8] := poutres_industrielles;
-  tRessources[9] := fondations;
+  SetLength(tRessources, 11);
+  
+  tRessources[1] := cuivre;
+  tRessources[2] := fer;
+  tRessources[3] := cables_de_cuivre;
+  tRessources[4] := plaques_de_fer;
+  tRessources[5] := tuyaux_en_fer;
+  tRessources[6] := sacs_de_beton;
+  tRessources[7] := acier;
+  tRessources[8] := plaques_renforcees;
+  tRessources[9] := poutres_industrielles;
+  tRessources[10] := fondations;
 
 
   choixStr := MultiSelectionInterfaceGame(tMessage);
   choix := StrToInt(choixStr) - 1;
 
+  // Si il est pas decouvert
   if not getEmplacements()[indexBat].decouvert then
   begin
-    AlertInterfaceGame('Impossible de construire ici',
-      ' Emplacement non decouvert', red);
+    AlertInterfaceGame('Impossible de construire ici', ' Emplacement non decouvert', red);
     refreshInterfaceGame();
   end
-  else if getEmplacements()[indexBat].niveau = 3 then
-  begin
-    AlertInterfaceGame('Impossible de construire', ' Niveau maximum atteint', red);
-    refreshInterfaceGame();
-  end
+  // Si typologie = hub alors impossible
   else if getEmplacements()[indexBat].typologie = hub then
   begin
-    AlertInterfaceGame('Impossible de construire ici',
-      TypologieToString(getEmplacements()[indexBat].typologie), red);
+    AlertInterfaceGame('Impossible de construire ici', TypologieToString(getEmplacements()[indexBat].typologie), red);
     refreshInterfaceGame();
   end
-  else if (getEmplacements()[indexBat].typologie <> aucune) or
-    (getEmplacements()[indexBat].gisement and getEmplacements()[indexBat].decouvert) then
+  // Si un bâtiment existe déjà (typologie <> aucune), impossible de construire
+  else if getEmplacements()[indexBat].typologie <> aucune then
+  begin
+    AlertInterfaceGame('Impossible de construire', ' Un bâtiment existe déjà ici', red);
+    refreshInterfaceGame();
+  end
+  // Si une mine est demandée mais pas de gisement
+  else if (tPossibilite[choix] = mine) and not getEmplacements()[indexBat].gisement then
+  begin
+    AlertInterfaceGame('Impossible de construire', ' Pas de gisement exploitable', red);
+    refreshInterfaceGame();
+  end
+  // Construction possible (emplacement libre : typologie = aucune)
+  else
   begin
     if haveEnoughResources(tPossibilite[choix], getEmplacements()[indexBat].niveau) then
     begin
-      setConstructionParametre(indexBat, getEmplacements()[indexBat].decouvert,
-        getEmplacements()[indexBat].gisement,
-        tPossibilite[choix], False, traiterResource(getEmplacements()[indexBat].minerai),
-        getEmplacements()[indexBat].niveau);
+      // Cas spécial pour le constructeur
+      if tPossibilite[choix] = constructeur then
+      begin
+        choix2 := ConstructeurChoice();
+        setConstructionParametre(indexBat, getEmplacements()[indexBat].decouvert,
+          getEmplacements()[indexBat].gisement,
+          tPossibilite[choix], False, tRessources[choix2],
+          getEmplacements()[indexBat].niveau);
+      end
+      // Cas spécial pour la centrale électrique
+      else if tPossibilite[choix] = centrale_elec then
+      begin
+        setConstructionParametre(indexBat, getEmplacements()[indexBat].decouvert,
+          getEmplacements()[indexBat].gisement,
+          tPossibilite[choix], False, production_elec, getEmplacements()[indexBat].niveau);
+        setPlayerResource(production_elec, getPlayerResource(production_elec) + getEnergieProduite(getEmplacements()[indexBat].niveau));
+      end
+      // Cas pour la mine et autres bâtiments
+      else
+      begin
+        setConstructionParametre(indexBat, getEmplacements()[indexBat].decouvert,
+          getEmplacements()[indexBat].gisement,
+          tPossibilite[choix], False, traiterResource(getEmplacements()[indexBat].minerai),
+          getEmplacements()[indexBat].niveau);
+      end;
+      
       removeRessources(tPossibilite[choix], getEmplacements()[indexBat].niveau);
       AlertInterfaceGame('Construction Effectué', 'Bravo !', green);
       refreshInterfaceGame();
@@ -563,98 +592,43 @@ begin
     else
     begin
       AlertInterfaceGame('Impossible de construire', ' Pas assez de ressources', red);
-    end;
-  end
-  else if (getEmplacements()[indexBat].typologie = aucune) and
-    getEmplacements()[indexBat].decouvert and getEmplacements()[indexBat].gisement then
-  begin
-    if getEmplacements()[indexBat].gisement and (tPossibilite[choix] = mine) then
-    begin
-      if haveEnoughResources(tPossibilite[choix],
-        getEmplacements()[indexBat].niveau) then
-      begin
-        setConstructionParametre(indexBat, getEmplacements()[indexBat].decouvert,
-          getEmplacements()[indexBat].gisement,
-          tPossibilite[choix], False,
-          traiterResource(getEmplacements()[indexBat].minerai),
-          getEmplacements()[indexBat].niveau);
-        removeRessources(tPossibilite[choix], getEmplacements()[indexBat].niveau);
-        AlertInterfaceGame('Construction Effectué', 'Bravo !', green);
-        refreshInterfaceGame();
-      end
-      else
-      begin
-        AlertInterfaceGame('Impossible de construire', 'Pas assez de ressources', red);
-        refreshInterfaceGame();
-      end;
-    end
-    else
-    begin
-      AlertInterfaceGame('Impossible de construire',
-        '  Pas de gisement exploitable', red);
       refreshInterfaceGame();
     end;
-  end
-  else if tPossibilite[choix] = centrale_elec then
-  begin
-    setConstructionParametre(indexBat, getEmplacements()[indexBat].decouvert,
-      getEmplacements()[indexBat].gisement,
-      tPossibilite[choix], False, production_elec, getEmplacements()[indexBat].niveau);
-    removeRessources(tPossibilite[choix], getEmplacements()[indexBat].niveau);
-    setPlayerResource(production_elec, getEnergieProduite(
-      getEmplacements()[indexBat].niveau));
-    AlertInterfaceGame('Construction Effectué', 'Bravo !', green);
-    refreshInterfaceGame();
-  end
-  else if tPossibilite[choix] = constructeur then
-  begin
-
-    choix2 := ConstructeurChoice();
-
-    setConstructionParametre(indexBat, getEmplacements()[indexBat].decouvert,
-      getEmplacements()[indexBat].gisement,
-      tPossibilite[choix], False, production_elec, getEmplacements()[indexBat].niveau);
-
   end;
 
 end;
 
 
 
-function ConstructeurChoice() : Integer;
+function ConstructeurChoice(): integer;
 var
-  choix: string;
-  tMessage: array of tLigne;
-  tMessage2: array of tLigne;
-  page : Integer;
+  choix: integer;
+  tMessage, tMessage2: array of tLigne;
+  page: integer;
 begin
   page := 1;
-  SetLength(tMessage, 6);
-  SetLength(tMessage2, 6);
+
+  SetLength(tMessage, 7);
+  SetLength(tMessage2, 7);
+
   tMessage[0].pos.x := 6;
   tMessage[0].pos.y := 28;
   tMessage[0].texte := 'Que doit produire le constructeur ?';
-
   tMessage[1].pos.x := 8;
   tMessage[1].pos.y := 29;
   tMessage[1].texte := '1/ Lingots de cuivre';
-
   tMessage[2].pos.x := 8;
   tMessage[2].pos.y := 30;
   tMessage[2].texte := '2/ Lingots de fer';
-
   tMessage[3].pos.x := 8;
   tMessage[3].pos.y := 31;
   tMessage[3].texte := '3/ Cables de cuivre';
-
   tMessage[4].pos.x := 8;
   tMessage[4].pos.y := 32;
   tMessage[4].texte := '4/ Plaques de fer ';
-
   tMessage[5].pos.x := 8;
   tMessage[5].pos.y := 33;
   tMessage[5].texte := '5/ Tuyaux en fer ';
-
   tMessage[6].pos.x := 8;
   tMessage[6].pos.y := 34;
   tMessage[6].texte := '6/ Autre ';
@@ -662,59 +636,49 @@ begin
   tMessage2[0].pos.x := 6;
   tMessage2[0].pos.y := 28;
   tMessage2[0].texte := 'Que doit produire le constructeur ?';
-
   tMessage2[1].pos.x := 8;
   tMessage2[1].pos.y := 29;
   tMessage2[1].texte := '1/ Sacs de Béton';
-
   tMessage2[2].pos.x := 8;
   tMessage2[2].pos.y := 30;
   tMessage2[2].texte := '2/ Acier';
-
   tMessage2[3].pos.x := 8;
   tMessage2[3].pos.y := 31;
   tMessage2[3].texte := '3/ Plaques renforcées';
-
   tMessage2[4].pos.x := 8;
   tMessage2[4].pos.y := 32;
   tMessage2[4].texte := '4/ Poutres industrielles';
-
   tMessage2[5].pos.x := 8;
   tMessage2[5].pos.y := 33;
   tMessage2[5].texte := '5/ Fondations';
-
   tMessage2[6].pos.x := 8;
   tMessage2[6].pos.y := 34;
   tMessage2[6].texte := '6/ Autre ';
 
+  repeat
+    if page = 1 then
+      choix := StrToInt(MultiSelectionInterfaceGame(tMessage))
+    else
+      choix := StrToInt(MultiSelectionInterfaceGame(tMessage2));
 
-  choix := MultiSelectionInterfaceGame(tMessage);
+    // si l'utilisateur choisit 6 je le passe à l'autre page
+    if (choix = 6) and (page = 1) then
+      page := 2
+    else if (choix = 6) and (page = 2) then
+      page := 1
+      
 
-  choix := StrToInt(choix);
+  until choix <> 6; // boucle tant que l'utilisateur choisit 6
 
-  if (choix := 6) and (page = 1) then
+  if page = 2 then
     begin
-      choix := MultiSelectionInterfaceGame(tMessage2);
-    end
-  else if (choix := 6) and (page = 2) then
-    begin
-      MultiSelectionInterfaceGame(tMessage);
-    end
-  else
-    begin
-      if page = 2 then
-        begin
-          choix := choix -1; // je enleve un index car je commence a 2
-          choix := choix * 2; // si page 2 je fais fois 2
-          ConstructeurChoice := choix;
-        end;
-      else
-        begin
-          choix := choix -1; // je enleve un index car je commence a 2
-          ConstructeurChoice := choix;
-        end;
+      choix := choix * 2; // si page 2 je fais fois 2
     end;
+
+
+  ConstructeurChoice := choix;
 end;
+
 
 procedure manageGame(val: string);
 begin
