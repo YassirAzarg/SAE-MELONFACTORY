@@ -711,10 +711,7 @@ begin
        begin
           if haveEnoughResources(getEmplacements()[choix].typologie, getEmplacements()[choix].niveau) then
           begin
-            setConstructionParametre(choix, getEmplacements()[choix].decouvert,
-            getEmplacements()[choix].gisement,
-            getEmplacements()[choix].typologie, False, getEmplacements()[choix].minerai,
-            getEmplacements()[choix].niveau + 1);
+            setConstructionParametre(choix, getEmplacements()[choix].decouvert, getEmplacements()[choix].gisement, getEmplacements()[choix].typologie, False, getEmplacements()[choix].minerai,getEmplacements()[choix].niveau + 1);
             AlertInterfaceGame('Amélioration réussie', 'Bravo !', green);
             refreshInterfaceGame;
           end

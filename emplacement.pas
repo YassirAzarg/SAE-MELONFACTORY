@@ -250,7 +250,7 @@ begin
       deplacerCurseurXY(posEmplacement[i].x + 38, posEmplacement[i].y + 2);
       Write('NIVEAU : ', tEmplacement[i].niveau);
       deplacerCurseurXY(posEmplacement[i].x + 4, posEmplacement[i].y + 4);
-      Write('PRODUCTION   : ', tEmplacement[i].niveau);
+      Write('PRODUCTION   : ', getResourceLabel(tEmplacement[i].minerai));
       SetConsoleOutputCP(850);
     end
 
