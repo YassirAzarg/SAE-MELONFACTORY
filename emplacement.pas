@@ -34,6 +34,7 @@ function getEmplacements(): TEmplacementsArray;
 // Procedure pour explorer une Zone
 procedure explorerZone();
 
+
 // Procedure setConstructionParametre me permet de changer exactement un parametre d une construction precise
 //@param indexCost index de l'Emplacement
 //@param decouvert Boolean 
@@ -180,7 +181,7 @@ begin
       end;
     end;
 
-    for i := 1 to 9 do
+    for i := 0 to 9 do
     begin
       tEmplacement[z][i].niveau := 1;
       tEmplacement[z][i].decouvert := False;
@@ -198,9 +199,6 @@ begin
 
     // Nombre de Gisement disponible au départ
     r := mathRandom(MIN_EMPLACEMENT_GISEMENT, MAX_EMPLACEMENT_GISEMENT);
-
-    zoneActuelle := z;
-    initHUB();
 
     for i := 1 to r do
     begin
@@ -236,6 +234,7 @@ begin
   end;
 
   zoneActuelle := zone_depart;
+  initHUB();
   dessineEmplacement();
 end;
 

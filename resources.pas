@@ -2,13 +2,9 @@ unit Resources;
 
 interface
 
-uses SysUtils, GestionEcran;
-
-
-
+uses SysUtils, GestionEcran, ZoneType;
 
 type
-  //Nouveau type : Resources pour indiquer les resources dispo pour le joueur
   resourcesC = (
     marzacoins,
     production_elec,
@@ -31,45 +27,25 @@ type
     );
 
 function traiterResource(resource: resourcesC) : resourcesC;
-
-// Initialisation des resources (Resources du joueur)
 procedure initResources;
-
-// Fonction qui retorune le stock d une resource
-//@parm resource de type ResourceC
-//@return un entier qui indique le nombre de resources dispo
 function getPlayerResource(resource: resourcesC): integer;
-
-
-// Procedure qui set le nombre de resource d'une resource précise
-//@param resource de type ResourceC
-//@parm val de type entier qui est la Valeur qui va correpondre au nombre de resource dispo
 procedure setPlayerResource(resource: resourcesC; val: integer);
-
-// Procedure qui add un nombre au nombre de resource d'une resource précise
-//@param resource de type ResourceC
-//@parm val de type entier qui est la Valeur qui va étre ajouter au nombre de resource dispo
 procedure addPlayerResource(resource: resourcesC; val: integer);
-
-// Procedure qui remove un nombre au nombre de resource d'une resource précise
-//@param resource de type ResourceC
-//@parm val de type entier qui est la Valeur qui va étre ajouter au nombre de resource dispo
 procedure removePlayerResource(resource: resourcesC; val: integer);
-
-
-// Function pour avoir le nom d une resource a afficher
-//@return le label textuel lié à la resource
 function getResourceLabel(resource: resourcesC): string;
 
+// Nouvelles fonctions pour gérer les ressources par zone
+procedure setResourceZone(zone: TypeZone);
+function getResourceZone(): TypeZone;
 
 implementation
 
 var
-  playerResource: array[resourcesC] of integer; // Resources du joueur
+  playerResource: array[TypeZone] of array[resourcesC] of integer; // Ressources par zone
+  currentResourceZone: TypeZone; // Zone actuelle pour l  es ressources
 
 const
-  CONSOMATION_ELEC_DEPART = 100; // Constantes des resources reçu au départ
-
+  CONSOMATION_ELEC_DEPART = 100;
   PLAQUES_FER_DEPART = 100;
   CABLES_CUIVRE_DEPART = 100;
   SAC_BETONS = 20;
@@ -95,46 +71,58 @@ const
     'Aucun'
     );
 
+procedure setResourceZone(zone: TypeZone);
+begin
+  currentResourceZone := zone;
+end;
 
+function getResourceZone(): TypeZone;
+begin
+  getResourceZone := currentResourceZone;
+end;
 
 procedure initResources;
 var
   res: resourcesC;
+  z: TypeZone;
 begin
-  for res := Low(resourcesC) to High(resourcesC) do
-    playerResource[res] := 0;
+  // Initialiser toutes les ressources pour toutes les zones
+  for z := Low(TypeZone) to High(TypeZone) do
+  begin
+    for res := Low(resourcesC) to High(resourcesC) do
+      playerResource[z][res] := 0;
 
-  playerResource[cables_de_cuivre] := CABLES_CUIVRE_DEPART;
-  playerResource[plaques_de_fer] := PLAQUES_FER_DEPART;
-  playerResource[consommation_elec] := CONSOMATION_ELEC_DEPART;
-  playerResource[sacs_de_beton] := SAC_BETONS;
+    // Donner des ressources de départ seulement à la zone de départ
+    if z = zone_depart then
+    begin
+      playerResource[z][cables_de_cuivre] := CABLES_CUIVRE_DEPART;
+      playerResource[z][plaques_de_fer] := PLAQUES_FER_DEPART;
+      playerResource[z][consommation_elec] := CONSOMATION_ELEC_DEPART;
+      playerResource[z][sacs_de_beton] := SAC_BETONS;
+    end;
+  end;
 
+  currentResourceZone := zone_depart;
 end;
 
-
-//@parm resource de type ResourceC
-//@return un entier qui indique le nombre de resources dispo
 function getPlayerResource(resource: resourcesC): integer;
 begin
-  // return le nombre dispo de la resource
-  getPlayerResource := playerResource[resource];
+  getPlayerResource := playerResource[currentResourceZone][resource];
 end;
 
-//@param resource de type ResourceC
-//@parm val de type entier qui est la Valeur qui va correpondre au nombre de resource dispo
 procedure setPlayerResource(resource: resourcesC; val: integer);
 begin
-  playerResource[resource] := val;
+  playerResource[currentResourceZone][resource] := val;
 end;
 
 procedure addPlayerResource(resource: resourcesC; val: integer);
 begin
-  playerResource[resource] := getPlayerResource(resource) + val;
+  playerResource[currentResourceZone][resource] := playerResource[currentResourceZone][resource] + val;
 end;
 
 procedure removePlayerResource(resource: resourcesC; val: integer);
 begin
-  playerResource[resource] := getPlayerResource(resource) - val;
+  playerResource[currentResourceZone][resource] := playerResource[currentResourceZone][resource] - val;
 end;
 
 function getResourceLabel(resource: resourcesC): string;
@@ -143,21 +131,18 @@ begin
 end;
 
 function traiterResource(resource: resourcesC) : resourcesC;
- var
+var
   tConvert : array[resourcesC] of resourcesC; 
- begin
+begin
   tConvert[fer] := minerai_de_fer;
   tConvert[cuivre] := minerai_de_cuivre;
 
-  if resource in [fer, cuivre] then // on evite de passer une resource qui n'est pas dans le tableau tConvert
+  if resource in [fer, cuivre] then
     begin
       traiterResource := tConvert[resource];
     end
   else
     traiterResource := resource; 
-
-
- end;
-
+end;
 
 end.

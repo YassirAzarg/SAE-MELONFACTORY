@@ -44,6 +44,10 @@ function ConstructeurChoice(): integer;
 procedure changerDeZone();
 
 
+// Ajouter dans la section interface
+procedure transfererRessources();
+
+
 implementation
 
 type
@@ -702,7 +706,6 @@ begin
 end;
 
 // procedure pour upgrade les batiments
-// procedure pour upgrade les batiments
 procedure upgradeBatiment();
 
 var
@@ -849,9 +852,21 @@ begin
   choix := StrToInt(choixStr);
 
   case choix of
-    1: setZoneActuelle(zone_depart);
-    2: setZoneActuelle(zone_desert);
-    3: setZoneActuelle(zone_foret);
+    1: 
+      begin
+        setZoneActuelle(zone_depart);
+        setResourceZone(zone_depart); 
+      end;
+    2: 
+      begin
+        setZoneActuelle(zone_desert);
+        setResourceZone(zone_desert); 
+      end;
+    3: 
+      begin
+        setZoneActuelle(zone_foret);
+        setResourceZone(zone_foret); 
+      end;
   end;
 
   refreshInterfaceGame();
@@ -893,6 +908,7 @@ begin
     end;
     '6':
     begin
+      transfererRessources();
       refreshInterfaceGame();
     end;
     '7':
@@ -903,7 +919,8 @@ begin
     end;
     '8':
     begin
-      // action pour 8
+      AlertInterfaceGame('Mhmmm désolé !', 'Il n''y a rien par ici !', red);
+      refreshInterfaceGame();
     end;
     '9':
     begin
@@ -1065,6 +1082,283 @@ begin
     AlertInterfaceGame('Impossible de construire ici', '   Emplacement inexistant', red);
     refreshInterfaceGame();
   end;
+end;
+
+
+// Procedure pour transférer des ressources entre zones
+procedure transfererRessources();
+var
+  tMessage, tMessage2: array of tLigne;
+  choixStr: string;
+  choixZone, choixRessource, quantite: integer;
+  zoneDestination, zoneOrigine: TypeZone;  // Changement ici
+  ressourceSelectionnee: resourcesC;
+  page: integer;
+begin
+  page := 1;
+
+  // Menu choix de la zone de destination
+  SetLength(tMessage, 4);
+  tMessage[0].pos.x := 6;
+  tMessage[0].pos.y := 28;
+  tMessage[0].texte := 'Vers quelle zone voulez-vous transférer ?';
+  
+  tMessage[1].pos.x := 8;
+  tMessage[1].pos.y := 29;
+  tMessage[1].texte := '1/ Zone de départ';
+  
+  tMessage[2].pos.x := 8;
+  tMessage[2].pos.y := 30;
+  tMessage[2].texte := '2/ Zone du désert rocheux';
+  
+  tMessage[3].pos.x := 8;
+  tMessage[3].pos.y := 31;
+  tMessage[3].texte := '3/ Zone de la forêt nordique';
+
+  choixStr := MultiSelectionInterfaceGame(tMessage);
+  
+  if choixStr = '' then
+  begin
+    AlertInterfaceGame('Transfert annulé', 'Aucune valeur saisie', red);
+    refreshInterfaceGame();
+    Exit;
+  end;
+
+  choixZone := StrToInt(choixStr);
+  
+  // Définir la zone de destination
+  case choixZone of
+    1: zoneDestination := zone_depart;
+    2: zoneDestination := zone_desert;
+    3: zoneDestination := zone_foret;
+  else
+    begin
+      AlertInterfaceGame('Transfert annulé', 'Zone invalide', red);
+      refreshInterfaceGame();
+      Exit;
+    end;
+  end;
+
+  // Vérifier qu'on ne transfère pas vers la zone actuelle
+  if zoneDestination = getZoneActuelle() then
+  begin
+    AlertInterfaceGame('Transfert impossible', 'Vous êtes déjà dans cette zone', red);
+    refreshInterfaceGame();
+    Exit;
+  end;
+
+  // Menu choix de la ressource (page 1)
+  SetLength(tMessage, 7);
+  tMessage[0].pos.x := 6;
+  tMessage[0].pos.y := 28;
+  tMessage[0].texte := 'Quelle ressource transférer ?';
+  
+  tMessage[1].pos.x := 8;
+  tMessage[1].pos.y := 29;
+  tMessage[1].texte := '1/ Minerai de cuivre';
+  
+  tMessage[2].pos.x := 8;
+  tMessage[2].pos.y := 30;
+  tMessage[2].texte := '2/ Minerai de fer';
+  
+  tMessage[3].pos.x := 8;
+  tMessage[3].pos.y := 31;
+  tMessage[3].texte := '3/ Calcaire';
+  
+  tMessage[4].pos.x := 8;
+  tMessage[4].pos.y := 32;
+  tMessage[4].texte := '4/ Charbon';
+  
+  tMessage[5].pos.x := 8;
+  tMessage[5].pos.y := 33;
+  tMessage[5].texte := '5/ Lingots de cuivre';
+  
+  tMessage[6].pos.x := 8;
+  tMessage[6].pos.y := 34;
+  tMessage[6].texte := '6/ Autres';
+
+  // Menu choix de la ressource (page 2)
+  SetLength(tMessage2, 7);
+  tMessage2[0].pos.x := 6;
+  tMessage2[0].pos.y := 28;
+  tMessage2[0].texte := 'Quelle ressource transférer ?';
+  
+  tMessage2[1].pos.x := 8;
+  tMessage2[1].pos.y := 29;
+  tMessage2[1].texte := '1/ Lingots de fer';
+  
+  tMessage2[2].pos.x := 8;
+  tMessage2[2].pos.y := 30;
+  tMessage2[2].texte := '2/ Câbles de cuivre';
+  
+  tMessage2[3].pos.x := 8;
+  tMessage2[3].pos.y := 31;
+  tMessage2[3].texte := '3/ Plaques de fer';
+  
+  tMessage2[4].pos.x := 8;
+  tMessage2[4].pos.y := 32;
+  tMessage2[4].texte := '4/ Tuyaux en fer';
+  
+  tMessage2[5].pos.x := 8;
+  tMessage2[5].pos.y := 33;
+  tMessage2[5].texte := '5/ Sacs de Béton';
+  
+  tMessage2[6].pos.x := 8;
+  tMessage2[6].pos.y := 34;
+  tMessage2[6].texte := '6/ Autres';
+
+  repeat
+    if page = 1 then
+      choixStr := MultiSelectionInterfaceGame(tMessage)
+    else
+      choixStr := MultiSelectionInterfaceGame(tMessage2);
+
+    if choixStr = '' then
+    begin
+      AlertInterfaceGame('Transfert annulé', 'Aucune valeur saisie', red);
+      refreshInterfaceGame();
+      Exit;
+    end;
+
+    choixRessource := StrToInt(choixStr);
+
+    // Gérer la navigation entre pages
+    if (choixRessource = 6) and (page = 1) then
+      page := 2
+    else if (choixRessource = 6) and (page = 2) then
+      page := 3;  // Page 3 pour les dernières ressources
+
+  until (choixRessource <> 6) or (page = 3);
+
+  // Sélectionner la ressource en fonction de la page et du choix
+  case page of
+    1:
+      case choixRessource of
+        1: ressourceSelectionnee := minerai_de_cuivre;
+        2: ressourceSelectionnee := minerai_de_fer;
+        3: ressourceSelectionnee := calcaire;
+        4: ressourceSelectionnee := charbon;
+        5: ressourceSelectionnee := cuivre;
+      else
+        begin
+          AlertInterfaceGame('Transfert annulé', 'Ressource invalide', red);
+          refreshInterfaceGame();
+          Exit;
+        end;
+      end;
+    2:
+      case choixRessource of
+        1: ressourceSelectionnee := fer;
+        2: ressourceSelectionnee := cables_de_cuivre;
+        3: ressourceSelectionnee := plaques_de_fer;
+        4: ressourceSelectionnee := tuyaux_en_fer;
+        5: ressourceSelectionnee := sacs_de_beton;
+        6: page := 3;  // Continuer vers page 3
+      else
+        begin
+          AlertInterfaceGame('Transfert annulé', 'Ressource invalide', red);
+          refreshInterfaceGame();
+          Exit;
+        end;
+      end;
+    3:
+      begin
+        // Page 3 avec les dernières ressources
+        SetLength(tMessage2, 6);
+        tMessage2[0].pos.x := 6;
+        tMessage2[0].pos.y := 28;
+        tMessage2[0].texte := 'Quelle ressource transférer ?';
+        
+        tMessage2[1].pos.x := 8;
+        tMessage2[1].pos.y := 29;
+        tMessage2[1].texte := '1/ Acier';
+        
+        tMessage2[2].pos.x := 8;
+        tMessage2[2].pos.y := 30;
+        tMessage2[2].texte := '2/ Plaques renforcées';
+        
+        tMessage2[3].pos.x := 8;
+        tMessage2[3].pos.y := 31;
+        tMessage2[3].texte := '3/ Poutres industrielles';
+        
+        tMessage2[4].pos.x := 8;
+        tMessage2[4].pos.y := 32;
+        tMessage2[4].texte := '4/ Fondations';
+        
+        tMessage2[5].pos.x := 8;
+        tMessage2[5].pos.y := 33;
+        tMessage2[5].texte := '5/ Retour';
+
+        choixStr := MultiSelectionInterfaceGame(tMessage2);
+        
+        if choixStr = '' then
+        begin
+          AlertInterfaceGame('Transfert annulé', 'Aucune valeur saisie', red);
+          refreshInterfaceGame();
+          Exit;
+        end;
+
+        choixRessource := StrToInt(choixStr);
+        
+        case choixRessource of
+          1: ressourceSelectionnee := acier;
+          2: ressourceSelectionnee := plaques_renforcees;
+          3: ressourceSelectionnee := poutres_industrielles;
+          4: ressourceSelectionnee := fondations;
+          5:
+            begin
+              transfererRessources();  // Recommencer
+              Exit;
+            end;
+        else
+          begin
+            AlertInterfaceGame('Transfert annulé', 'Ressource invalide', red);
+            refreshInterfaceGame();
+            Exit;
+          end;
+        end;
+      end;
+  end;
+
+  // Demander la quantité à transférer
+  choixStr := SelectionInterfaceGame('< Quelle quantité transférer ? >');
+  
+  if choixStr = '' then
+  begin
+    AlertInterfaceGame('Transfert annulé', 'Aucune valeur saisie', red);
+    refreshInterfaceGame();
+    Exit;
+  end;
+
+  quantite := StrToInt(choixStr);
+
+  // Vérifier si on a assez de ressources
+  if getPlayerResource(ressourceSelectionnee) < quantite then
+  begin
+    AlertInterfaceGame('Transfert impossible', 
+      'Pas assez de ressources disponibles', red);
+    refreshInterfaceGame();
+    Exit;
+  end;
+
+  // Effectuer le transfert
+  addPlayerResource(ressourceSelectionnee, -quantite);  // Retirer de la zone actuelle
+  
+  // Sauvegarder la zone actuelle
+  zoneOrigine := getZoneActuelle();
+  
+  // Changer temporairement vers la zone de destination
+  setZoneActuelle(zoneDestination);
+  setResourceZone(zoneDestination); 
+  addPlayerResource(ressourceSelectionnee, quantite);  // Ajouter à la zone de destination
+  
+  // Revenir à la zone d'origine
+  setZoneActuelle(zoneOrigine);
+  setResourceZone(zoneOrigine);
+
+  AlertInterfaceGame('Transfert réussi !', 
+    'Les ressources ont été transférées', green);
+  refreshInterfaceGame();
 end;
 
 
